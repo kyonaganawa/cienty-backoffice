@@ -7,7 +7,7 @@ import { Pedido } from '@/lib/mock-data/pedidos';
 import { Distribuidora } from '@/lib/mock-data/distribuidoras';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ChevronDown, ChevronUp, ShoppingCart, Package } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ChevronDown, ChevronUp, ShoppingCart, Package, User } from 'lucide-react';
 
 export default function ClienteDetailPage() {
   const params = useParams();
@@ -122,8 +122,8 @@ export default function ClienteDetailPage() {
       </div>
 
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">{cliente.nome}</h2>
-        <p className="text-gray-500 mt-2">Detalhes do cliente</p>
+        <h2 className="text-3xl font-bold tracking-tight">{cliente.empresa}</h2>
+        <p className="text-gray-500 mt-2">Detalhes da empresa</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -200,25 +200,51 @@ export default function ClienteDetailPage() {
         </Card>
       </div>
 
+      {/* Users Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Resumo</CardTitle>
+          <div className="flex items-center gap-2">
+            <User className="w-5 h-5" />
+            <CardTitle>Usuários ({cliente.usuarios?.length || 0})</CardTitle>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-600 font-medium">Nome Completo</p>
-              <p className="text-lg font-bold text-blue-900 mt-1">{cliente.nome}</p>
+          {!cliente.usuarios || cliente.usuarios.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">Nenhum usuário cadastrado</p>
+          ) : (
+            <div className="space-y-3">
+              {cliente.usuarios.map((usuario) => (
+                <div
+                  key={usuario.id}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <User className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <p className="font-semibold">{usuario.nome}</p>
+                        {usuario.cargo && (
+                          <p className="text-sm text-gray-500">{usuario.cargo}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right space-y-1">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Mail className="w-4 h-4" />
+                      <span>{usuario.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <Phone className="w-4 h-4" />
+                      <span>{usuario.telefone}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="p-4 bg-purple-50 rounded-lg">
-              <p className="text-sm text-purple-600 font-medium">Empresa</p>
-              <p className="text-lg font-bold text-purple-900 mt-1">{cliente.empresa}</p>
-            </div>
-            <div className="p-4 bg-green-50 rounded-lg">
-              <p className="text-sm text-green-600 font-medium">Status da Conta</p>
-              <p className="text-lg font-bold text-green-900 mt-1 capitalize">{cliente.status}</p>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 

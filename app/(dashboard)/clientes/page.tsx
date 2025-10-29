@@ -88,18 +88,17 @@ export default function ClientesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Telefone</TableHead>
                 <TableHead>Empresa</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Telefone</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Data Cadastro</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredClientes.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
+                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
                     Nenhum cliente encontrado
                   </TableCell>
                 </TableRow>
@@ -110,10 +109,7 @@ export default function ClientesPage() {
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => router.push(`/clientes/${cliente.id}`)}
                   >
-                  <TableCell className="font-medium">{cliente.nome}</TableCell>
-                  <TableCell>{cliente.email}</TableCell>
-                  <TableCell>{cliente.telefone}</TableCell>
-                  <TableCell>{cliente.empresa}</TableCell>
+                  <TableCell className="font-medium">{cliente.empresa}</TableCell>
                   <TableCell>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -125,6 +121,8 @@ export default function ClientesPage() {
                       {cliente.status}
                     </span>
                   </TableCell>
+                  <TableCell>{cliente.telefone}</TableCell>
+                  <TableCell>{cliente.email}</TableCell>
                   <TableCell>
                     {new Date(cliente.dataCadastro).toLocaleDateString('pt-BR')}
                   </TableCell>
