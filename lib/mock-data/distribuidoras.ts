@@ -7,6 +7,7 @@ export interface Distribuidora {
   responsavel: string;
   email: string;
   status: 'ativo' | 'inativo';
+  lastSync?: string;
 }
 
 export const mockDistribuidoras: Distribuidora[] = [
@@ -19,6 +20,7 @@ export const mockDistribuidoras: Distribuidora[] = [
     responsavel: 'Roberto Almeida',
     email: 'contato@nacional.com.br',
     status: 'ativo',
+    lastSync: '2024-10-29T08:30:00',
   },
   {
     id: '2',
@@ -29,6 +31,7 @@ export const mockDistribuidoras: Distribuidora[] = [
     responsavel: 'Juliana Souza',
     email: 'contato@suldist.com.br',
     status: 'ativo',
+    lastSync: '2024-10-28T14:20:00',
   },
   {
     id: '3',
@@ -39,6 +42,7 @@ export const mockDistribuidoras: Distribuidora[] = [
     responsavel: 'Fernando Lima',
     email: 'contato@nordeste.com.br',
     status: 'ativo',
+    lastSync: '2024-10-27T10:15:00',
   },
   {
     id: '4',
@@ -49,6 +53,7 @@ export const mockDistribuidoras: Distribuidora[] = [
     responsavel: 'Camila Rocha',
     email: 'contato@centrooeste.com.br',
     status: 'inativo',
+    lastSync: '2024-10-20T16:45:00',
   },
   {
     id: '5',
@@ -59,5 +64,6 @@ export const mockDistribuidoras: Distribuidora[] = [
     responsavel: 'Ricardo Martins',
     email: 'contato@nortelogistica.com.br',
     status: 'ativo',
+    lastSync: '2024-10-29T09:00:00',
   },
 ];

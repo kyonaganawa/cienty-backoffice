@@ -94,7 +94,7 @@ export default function MultilojasPage() {
     if (!selectedClienteId) {
       setSubmitStatus({
         type: 'error',
-        message: 'Por favor, selecione um cliente',
+        message: 'Por favor, selecione um usuário',
       });
       return;
     }
@@ -160,7 +160,7 @@ export default function MultilojasPage() {
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Multilojas</h2>
         <p className="text-gray-500 mt-2">
-          Vincule clientes a múltiplas lojas
+          Vincule usuários a múltiplas lojas
         </p>
       </div>
 
@@ -172,21 +172,21 @@ export default function MultilojasPage() {
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <User className="w-5 h-5" />
-                  <CardTitle>Selecione o Cliente</CardTitle>
+                  <CardTitle>Selecione o Usuário</CardTitle>
                 </div>
                 <CardDescription>
-                  Escolha o cliente que será vinculado às lojas
+                  Escolha o usuário que será vinculado às lojas
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <Label htmlFor="cliente">Cliente</Label>
+                  <Label htmlFor="cliente">Usuário</Label>
                   <Select
                     value={selectedClienteId}
                     onValueChange={setSelectedClienteId}
                   >
                     <SelectTrigger id="cliente">
-                      <SelectValue placeholder="Selecione um cliente" />
+                      <SelectValue placeholder="Selecione um usuário" />
                     </SelectTrigger>
                     <SelectContent>
                       {clientes.map((cliente) => (
@@ -199,7 +199,7 @@ export default function MultilojasPage() {
                   {selectedClienteId && (
                     <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                       <p className="text-sm font-medium text-blue-900">
-                        Cliente Selecionado:
+                        Usuário Selecionado:
                       </p>
                       <p className="text-sm text-blue-700">
                         {clientes.find((c) => c.id === selectedClienteId)?.nome}
@@ -268,7 +268,7 @@ export default function MultilojasPage() {
                 <CardTitle>Lojas Disponíveis</CardTitle>
               </div>
               <CardDescription>
-                Selecione as lojas que deseja vincular ao cliente
+                Selecione as lojas que deseja vincular ao usuário
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -368,7 +368,7 @@ export default function MultilojasPage() {
                 Processando...
               </>
             ) : (
-              'Vincular Cliente às Lojas'
+              'Vincular Usuário às Lojas'
             )}
           </Button>
         </div>

@@ -7,7 +7,7 @@ import { Pedido } from '@/lib/mock-data/pedidos';
 import { Distribuidora } from '@/lib/mock-data/distribuidoras';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ChevronDown, ChevronUp, ShoppingCart, Package, User } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ChevronDown, ChevronUp, ShoppingCart, Package, User, RefreshCw, Clock } from 'lucide-react';
 
 export default function ClienteDetailPage() {
   const params = useParams();
@@ -19,6 +19,7 @@ export default function ClienteDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [showPedidos, setShowPedidos] = useState(true);
   const [showDistribuidoras, setShowDistribuidoras] = useState(true);
+  const [syncingDistribuidora, setSyncingDistribuidora] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -78,6 +79,47 @@ export default function ClienteDetailPage() {
       cancelado: 'Cancelado',
     };
     return labels[status as keyof typeof labels] || status;
+  };
+
+  const handleSyncDistribuidora = async (e: React.MouseEvent, distribuidoraId: string) => {
+    e.stopPropagation();
+    setSyncingDistribuidora(distribuidoraId);
+
+    // Simulate sync API call
+    setTimeout(() => {
+      // Update the lastSync date for this distribuidora
+      setDistribuidoras(prev =>
+        prev.map(d =>
+          d.id === distribuidoraId
+            ? { ...d, lastSync: new Date().toISOString() }
+            : d
+        )
+      );
+      setSyncingDistribuidora(null);
+    }, 2000);
+  };
+
+  const formatLastSync = (lastSync?: string) => {
+    if (!lastSync) return 'Nunca sincronizado';
+
+    const syncDate = new Date(lastSync);
+    const now = new Date();
+    const diffMs = now.getTime() - syncDate.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Agora mesmo';
+    if (diffMins < 60) return `Há ${diffMins} minuto${diffMins > 1 ? 's' : ''}`;
+    if (diffHours < 24) return `Há ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
+    if (diffDays === 1) return 'Ontem';
+    if (diffDays < 7) return `Há ${diffDays} dias`;
+
+    return syncDate.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
   };
 
   if (isLoading) {
@@ -364,8 +406,26 @@ export default function ClienteDetailPage() {
                       <p className="text-sm text-gray-500 mt-1">
                         {distribuidora.cidade}/{distribuidora.estado} • {distribuidora.responsavel}
                       </p>
+                      <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
+                        <Clock className="w-3 h-3" />
+                        <span>Última sinc: {formatLastSync(distribuidora.lastSync)}</span>
+                      </div>
                     </div>
-                    <div>
+                    <div className="flex items-center gap-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={(e) => handleSyncDistribuidora(e, distribuidora.id)}
+                        disabled={syncingDistribuidora === distribuidora.id}
+                        className="gap-2"
+                      >
+                        <RefreshCw
+                          className={`w-4 h-4 ${
+                            syncingDistribuidora === distribuidora.id ? 'animate-spin' : ''
+                          }`}
+                        />
+                        {syncingDistribuidora === distribuidora.id ? 'Sincronizando...' : 'Sincronizar'}
+                      </Button>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           distribuidora.status === 'ativo'
