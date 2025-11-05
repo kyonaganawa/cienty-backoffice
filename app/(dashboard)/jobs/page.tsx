@@ -281,6 +281,14 @@ export default function JobsPage() {
                           <p className="text-sm text-gray-600">
                             {job.descricao}
                           </p>
+                          <div className="flex gap-3 mt-1">
+                            <span className="text-xs text-gray-500">
+                              Empresa: <span className="font-medium text-gray-700">{job.empresa}</span>
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              Distribuidora: <span className="font-medium text-gray-700">{job.distribuidora}</span>
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600 ml-14">

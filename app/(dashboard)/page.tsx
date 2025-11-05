@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Users, Building2, Package, Ticket, Store, Clock, AlertTriangle } from 'lucide-react';
+import { Users, Building2, Package, Ticket, Store, Clock, AlertTriangle, MessageSquare, Layers } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const menuItems = [
@@ -53,6 +53,20 @@ const menuItems = [
     href: '/jobs',
     icon: Clock,
     color: 'bg-cyan-500',
+  },
+  {
+    title: 'Coleções',
+    description: 'Organize produtos em coleções',
+    href: '/colecoes',
+    icon: Layers,
+    color: 'bg-teal-500',
+  },
+  {
+    title: 'Comunicações',
+    description: 'Gerencie mensagens e anúncios',
+    href: '/comunicacoes',
+    icon: MessageSquare,
+    color: 'bg-indigo-500',
   },
 ];
 

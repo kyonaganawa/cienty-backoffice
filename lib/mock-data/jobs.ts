@@ -7,6 +7,8 @@ export interface Job {
   duracao: number; // in seconds
   mensagemErro?: string;
   tipo: string; // e.g., 'sync', 'import', 'export', 'backup', 'cleanup'
+  empresa: string;
+  distribuidora: string;
 }
 
 export const mockJobs: Job[] = [
@@ -18,6 +20,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 45,
     tipo: 'sync',
+    empresa: 'Empresa ABC',
+    distribuidora: 'Distribuidora Nacional S.A.',
   },
   {
     id: '2',
@@ -27,6 +31,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 120,
     tipo: 'import',
+    empresa: 'Tech Solutions',
+    distribuidora: 'Sul Distribuidora Ltda',
   },
   {
     id: '3',
@@ -36,6 +42,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 300,
     tipo: 'backup',
+    empresa: 'Digital First',
+    distribuidora: 'Nordeste Comércio e Distribuição',
   },
   {
     id: '4',
@@ -46,6 +54,8 @@ export const mockJobs: Job[] = [
     duracao: 15,
     mensagemErro: 'Falha ao acessar o diretório de logs',
     tipo: 'cleanup',
+    empresa: 'Startup Inovadora',
+    distribuidora: 'Centro-Oeste Distribuidora',
   },
   {
     id: '5',
@@ -55,6 +65,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 180,
     tipo: 'export',
+    empresa: 'Empresa ABC',
+    distribuidora: 'Norte Logística e Distribuição',
   },
   {
     id: '6',
@@ -65,6 +77,8 @@ export const mockJobs: Job[] = [
     duracao: 30,
     mensagemErro: 'Timeout na conexão com API da distribuidora',
     tipo: 'sync',
+    empresa: 'Tech Solutions',
+    distribuidora: 'Distribuidora Nacional S.A.',
   },
   {
     id: '7',
@@ -74,6 +88,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 90,
     tipo: 'sync',
+    empresa: 'Digital First',
+    distribuidora: 'Sul Distribuidora Ltda',
   },
   {
     id: '8',
@@ -83,6 +99,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 240,
     tipo: 'import',
+    empresa: 'Commerce Plus',
+    distribuidora: 'Nordeste Comércio e Distribuição',
   },
   {
     id: '9',
@@ -92,6 +110,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 60,
     tipo: 'backup',
+    empresa: 'Startup Inovadora',
+    distribuidora: 'Norte Logística e Distribuição',
   },
   {
     id: '10',
@@ -102,6 +122,8 @@ export const mockJobs: Job[] = [
     duracao: 20,
     mensagemErro: 'Inconsistências encontradas em 15 registros',
     tipo: 'sync',
+    empresa: 'Empresa ABC',
+    distribuidora: 'Centro-Oeste Distribuidora',
   },
   {
     id: '11',
@@ -111,6 +133,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 45,
     tipo: 'sync',
+    empresa: 'Tech Solutions',
+    distribuidora: 'Distribuidora Nacional S.A.',
   },
   {
     id: '12',
@@ -120,6 +144,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 10,
     tipo: 'cleanup',
+    empresa: 'Digital First',
+    distribuidora: 'Sul Distribuidora Ltda',
   },
   {
     id: '13',
@@ -129,6 +155,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 150,
     tipo: 'export',
+    empresa: 'Commerce Plus',
+    distribuidora: 'Nordeste Comércio e Distribuição',
   },
   {
     id: '14',
@@ -139,6 +167,8 @@ export const mockJobs: Job[] = [
     duracao: 40,
     mensagemErro: 'Arquivo XML malformado',
     tipo: 'import',
+    empresa: 'Startup Inovadora',
+    distribuidora: 'Norte Logística e Distribuição',
   },
   {
     id: '15',
@@ -148,6 +178,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 75,
     tipo: 'sync',
+    empresa: 'Empresa ABC',
+    distribuidora: 'Centro-Oeste Distribuidora',
   },
   {
     id: '16',
@@ -157,6 +189,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 450,
     tipo: 'backup',
+    empresa: 'Tech Solutions',
+    distribuidora: 'Distribuidora Nacional S.A.',
   },
   {
     id: '17',
@@ -166,6 +200,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 25,
     tipo: 'cleanup',
+    empresa: 'Commerce Plus',
+    distribuidora: 'Sul Distribuidora Ltda',
   },
   {
     id: '18',
@@ -176,6 +212,8 @@ export const mockJobs: Job[] = [
     duracao: 35,
     mensagemErro: 'Serviço de email temporariamente indisponível',
     tipo: 'sync',
+    empresa: 'Digital First',
+    distribuidora: 'Nordeste Comércio e Distribuição',
   },
   {
     id: '19',
@@ -185,6 +223,8 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 95,
     tipo: 'export',
+    empresa: 'Startup Inovadora',
+    distribuidora: 'Centro-Oeste Distribuidora',
   },
   {
     id: '20',
@@ -194,5 +234,7 @@ export const mockJobs: Job[] = [
     resultado: 'success',
     duracao: 55,
     tipo: 'sync',
+    empresa: 'Empresa ABC',
+    distribuidora: 'Norte Logística e Distribuição',
   },
 ];
