@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Users, Building2, Package, Ticket, Store, Clock, AlertTriangle, MessageSquare, Layers } from 'lucide-react';
+import { Users, Building2, Package, Ticket, Store, Clock, AlertTriangle, MessageSquare, Layers, ShoppingCart } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const menuItems = [
@@ -67,6 +67,13 @@ const menuItems = [
     href: '/comunicacoes',
     icon: MessageSquare,
     color: 'bg-indigo-500',
+  },
+  {
+    title: 'Restaurar Carrinho',
+    description: 'Restaure carrinhos de compras de clientes',
+    href: '/restaurar-carrinho',
+    icon: ShoppingCart,
+    color: 'bg-amber-500',
   },
 ];
 
