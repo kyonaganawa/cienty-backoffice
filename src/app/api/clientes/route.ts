@@ -18,7 +18,10 @@ export async function GET(request: NextRequest) {
     // Get the authorization token from the request headers
     const authHeader = request.headers.get('authorization');
 
+    console.info('[/api/clientes] Authorization header:', authHeader ? 'Present' : 'Missing');
+
     if (!authHeader) {
+      console.error('[/api/clientes] No authorization header provided');
       return NextResponse.json(
         { error: 'Unauthorized - No token provided' },
         { status: 401 }

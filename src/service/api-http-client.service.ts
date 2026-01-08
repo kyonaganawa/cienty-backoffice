@@ -33,6 +33,9 @@ class ApiHttpClient {
       (config) => {
         if (this.token && config.headers) {
           config.headers.Authorization = `Bearer ${this.token}`;
+          console.info('[ApiHttpClient] Adding Authorization header to request:', config.url);
+        } else {
+          console.warn('[ApiHttpClient] No token available for request:', config.url);
         }
         return config;
       },
@@ -55,10 +58,12 @@ class ApiHttpClient {
 
   setToken(token: string) {
     this.token = token;
+    console.info('[ApiHttpClient] Token set:', token ? `${token.substring(0, 20)}...` : 'None');
   }
 
   clearToken() {
     this.token = null;
+    console.info('[ApiHttpClient] Token cleared');
   }
 
   async get<TParams, TResponse>(endpoint: string, params?: TParams, options?: ApiOptions): Promise<TResponse> {

@@ -20,8 +20,10 @@ function AuthInitializer() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
+      console.info('[AuthInitializer] Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'None');
       if (token) {
         ApiHttpClientService.setToken(token);
+        console.info('[AuthInitializer] Token set in ApiHttpClientService');
       }
     }
   }, []);

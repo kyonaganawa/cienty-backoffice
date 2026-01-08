@@ -36,8 +36,10 @@ export async function POST(request: NextRequest) {
 
     const data = await response.json();
 
+    console.info('[/api/auth/login] Staging API response keys:', Object.keys(data));
+
     // Return the staging API response
-    // Expected format: { user: {...}, token: string, refreshToken?: string }
+    // Expected format: { user: {...}, accessToken: string, refreshToken?: string }
     return NextResponse.json(data);
   } catch (error) {
     console.error('Login error:', error);

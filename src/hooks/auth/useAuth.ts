@@ -30,8 +30,14 @@ export const useAuth = () => {
 
       const response = await ApiHttpClientService.post<
         { email: string; password: string },
-        { user: User; token: string; refreshToken?: string }
+        { user: User; accessToken: string; refreshToken?: string }
       >('/api/auth/login', { email, password });
+
+      console.info('[useAuth] Login response:', {
+        hasUser: !!response.user,
+        hasAccessToken: !!response.accessToken,
+        tokenPreview: response.accessToken ? `${response.accessToken.substring(0, 20)}...` : 'None'
+      });
 
       // Store user data
       dispatch(setUser(response.user));
@@ -40,16 +46,18 @@ export const useAuth = () => {
       }
 
       // Store and set authentication token
-      dispatch(setToken(response.token));
+      dispatch(setToken(response.accessToken));
       if (typeof window !== 'undefined') {
-        localStorage.setItem('token', response.token);
+        localStorage.setItem('token', response.accessToken);
+        console.info('[useAuth] Token stored in localStorage');
         if (response.refreshToken) {
           localStorage.setItem('refreshToken', response.refreshToken);
         }
       }
 
       // Set token in API service for subsequent requests
-      ApiHttpClientService.setToken(response.token);
+      ApiHttpClientService.setToken(response.accessToken);
+      console.info('[useAuth] Token set in ApiHttpClientService');
 
       return true;
     } catch {
