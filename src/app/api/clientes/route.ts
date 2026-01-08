@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     // Get the authorization token from the request headers
     const authHeader = request.headers.get('authorization');
 
-    console.info('[/api/clientes] Authorization header:', authHeader ? 'Present' : 'Missing');
+    console.info('[/api/clientes] Authorization header:', authHeader ? `Present (${authHeader.substring(0, 30)}...)` : 'Missing');
 
     if (!authHeader) {
       console.error('[/api/clientes] No authorization header provided');
@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Forward the request to the staging API
+    console.info('[/api/clientes] Forwarding request to staging API...');
     const response = await fetch(STAGING_API_URL, {
       method: 'GET',
       headers: {
@@ -37,8 +38,11 @@ export async function GET(request: NextRequest) {
       },
     });
 
+    console.info('[/api/clientes] Staging API response status:', response.status);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('[/api/clientes] Staging API error:', response.status, errorData);
       return NextResponse.json(
         { error: errorData.message || 'Failed to fetch clients' },
         { status: response.status }
