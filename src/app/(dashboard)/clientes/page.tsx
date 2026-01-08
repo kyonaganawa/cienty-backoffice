@@ -29,12 +29,12 @@ export default function ClientesPage() {
     const query = searchQuery.toLowerCase();
     return clientes.filter(
       (cliente) =>
-        cliente.name.toLowerCase().includes(query) ||
-        cliente.cnpj.toLowerCase().includes(query) ||
+        cliente.name?.toLowerCase().includes(query) ||
+        cliente.cnpj?.toLowerCase().includes(query) ||
         (cliente.phone?.toLowerCase() || '').includes(query) ||
-        cliente.company.name.toLowerCase().includes(query) ||
-        cliente.city.toLowerCase().includes(query) ||
-        cliente.state.toLowerCase().includes(query)
+        cliente.company?.name?.toLowerCase().includes(query) ||
+        (cliente.city?.toLowerCase() || '').includes(query) ||
+        (cliente.state?.toLowerCase() || '').includes(query)
     );
   }, [clientes, searchQuery]);
 
@@ -95,11 +95,11 @@ export default function ClientesPage() {
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => router.push(`/clientes/${cliente.id}`)}
                   >
-                    <TableCell className="font-medium">{cliente.name}</TableCell>
-                    <TableCell className="font-mono text-sm">{cliente.cnpj}</TableCell>
-                    <TableCell>{cliente.company.name}</TableCell>
+                    <TableCell className="font-medium">{cliente.name || '-'}</TableCell>
+                    <TableCell className="font-mono text-sm">{cliente.cnpj || '-'}</TableCell>
+                    <TableCell>{cliente.company?.name || '-'}</TableCell>
                     <TableCell>
-                      {cliente.city}/{cliente.state}
+                      {cliente.city || '-'}/{cliente.state || '-'}
                     </TableCell>
                     <TableCell>
                       <span
