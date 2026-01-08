@@ -32,7 +32,8 @@ class ApiHttpClient {
     this.client.interceptors.request.use(
       (config) => {
         if (this.token && config.headers) {
-          config.headers.Authorization = `Bearer ${this.token}`;
+          // Staging API expects raw token WITHOUT "Bearer" prefix
+          config.headers.Authorization = this.token;
           console.info('[ApiHttpClient] Adding Authorization header to request:', config.url);
         } else {
           console.warn('[ApiHttpClient] No token available for request:', config.url);
