@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useGetColecoes } from '@/hooks/colecao/useGetColecoes';
+import { formatDate } from '@/lib/date-utils';
 import {
   Card,
   CardContent,
@@ -19,7 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Colecao } from '@/lib/mock-data/colecoes';
 import {
   Layers,
   Package,
@@ -30,25 +31,8 @@ import {
 
 export default function ColecoesPage() {
   const router = useRouter();
-  const [colecoes, setColecoes] = useState<Colecao[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: colecoes = [], isLoading } = useGetColecoes();
   const [searchQuery, setSearchQuery] = useState('');
-
-  useEffect(() => {
-    async function fetchColecoes() {
-      try {
-        const response = await fetch('/api/colecoes');
-        const data = await response.json();
-        setColecoes(data.data);
-      } catch (error) {
-        console.error('Erro ao carregar coleções:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchColecoes();
-  }, []);
 
   const filteredColecoes = useMemo(() => {
     return colecoes.filter((colecao) => {
@@ -72,14 +56,6 @@ export default function ColecoesPage() {
 
     return { totalColecoes, totalProdutos, mediaProdutos };
   }, [colecoes]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
-  };
 
   if (isLoading) {
     return (

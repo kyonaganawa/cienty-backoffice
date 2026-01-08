@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Ticket } from '@/lib/mock-data/tickets';
+import { useGetTicketById } from '@/hooks/ticket/useGetTicketById';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,29 +10,7 @@ import { ArrowLeft, User, Calendar, AlertCircle, Package, Building2, FileText, C
 export default function TicketDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [ticket, setTicket] = useState<Ticket | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchTicket() {
-      try {
-        const response = await fetch(`/api/tickets/${params.id}`);
-        if (!response.ok) {
-          throw new Error('Ticket não encontrado');
-        }
-        const data = await response.json();
-        setTicket(data.data);
-      } catch (error) {
-        setError('Erro ao carregar ticket');
-        console.error('Erro ao carregar ticket:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchTicket();
-  }, [params.id]);
+  const { data: ticket, isLoading, error } = useGetTicketById(params.id as string);
 
   const getStatusColor = (status: string) => {
     const colors = {
@@ -96,7 +73,7 @@ export default function TicketDetailPage() {
         </Button>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center text-red-600">{error || 'Ticket não encontrado'}</div>
+            <div className="text-center text-red-600">{error?.message || 'Ticket não encontrado'}</div>
           </CardContent>
         </Card>
       </div>

@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Produto } from '@/lib/mock-data/produtos';
+import { useGetProdutoById } from '@/hooks/product/useGetProdutoById';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Package, Tag, Layers, DollarSign, Activity, FileText } from 'lucide-react';
@@ -10,29 +9,7 @@ import { ArrowLeft, Package, Tag, Layers, DollarSign, Activity, FileText } from 
 export default function ProdutoDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [produto, setProduto] = useState<Produto | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchProduto() {
-      try {
-        const response = await fetch(`/api/produtos/${params.id}`);
-        if (!response.ok) {
-          throw new Error('Produto não encontrado');
-        }
-        const data = await response.json();
-        setProduto(data.data);
-      } catch (error) {
-        setError('Erro ao carregar produto');
-        console.error('Erro ao carregar produto:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchProduto();
-  }, [params.id]);
+  const { data: produto, isLoading, error } = useGetProdutoById(params.id as string);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -62,7 +39,7 @@ export default function ProdutoDetailPage() {
         </Button>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center text-red-600">{error || 'Produto não encontrado'}</div>
+            <div className="text-center text-red-600">{error?.message || 'Produto não encontrado'}</div>
           </CardContent>
         </Card>
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import { Job } from '@/lib/mock-data/jobs';
+import { useMemo, useState } from 'react';
+import { useGetJobs } from '@/hooks/job/useGetJobs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -26,27 +26,10 @@ import {
 } from 'lucide-react';
 
 export default function JobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: jobs = [], isLoading } = useGetJobs();
   const [searchQuery, setSearchQuery] = useState('');
   const [resultadoFilter, setResultadoFilter] = useState<string>('all');
   const [tipoFilter, setTipoFilter] = useState<string>('all');
-
-  useEffect(() => {
-    async function fetchJobs() {
-      try {
-        const response = await fetch('/api/jobs');
-        const data = await response.json();
-        setJobs(data.data);
-      } catch (error) {
-        console.error('Erro ao carregar jobs:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchJobs();
-  }, []);
 
   const filteredJobs = useMemo(() => {
     let filtered = jobs;

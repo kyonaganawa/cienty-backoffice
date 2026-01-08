@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Cliente } from '@/lib/mock-data/clientes';
-import { Pedido } from '@/lib/mock-data/pedidos';
+import { useGetClienteById } from '@/hooks/client/useGetClienteById';
+import { useGetClientePedidos } from '@/hooks/client/useGetClientePedidos';
+import { useGetClienteDistribuidoras } from '@/hooks/client/useGetClienteDistribuidoras';
 import { Distribuidora } from '@/lib/mock-data/distribuidoras';
+import { formatRelativeTime, formatDate } from '@/lib/date-utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ChevronDown, ChevronUp, ShoppingCart, Package, User, RefreshCw, Clock } from 'lucide-react';
@@ -12,45 +14,23 @@ import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ChevronDown, Che
 export default function ClienteDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [cliente, setCliente] = useState<Cliente | null>(null);
-  const [pedidos, setPedidos] = useState<Pedido[]>([]);
-  const [distribuidoras, setDistribuidoras] = useState<Distribuidora[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const clienteId = params.id as string;
+
+  const { data: cliente, isLoading: isLoadingCliente, error } = useGetClienteById(clienteId);
+  const { data: pedidos = [] } = useGetClientePedidos(clienteId);
+  const { data: distribuidoras = [], refetch: refetchDistribuidoras } = useGetClienteDistribuidoras(clienteId);
+
   const [showPedidos, setShowPedidos] = useState(true);
   const [showDistribuidoras, setShowDistribuidoras] = useState(true);
   const [syncingDistribuidora, setSyncingDistribuidora] = useState<string | null>(null);
+  const [localDistribuidoras, setLocalDistribuidoras] = useState<Distribuidora[]>([]);
 
+  const isLoading = isLoadingCliente;
+
+  // Update local state when distribuidoras change
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [clienteRes, pedidosRes, distribuidorasRes] = await Promise.all([
-          fetch(`/api/clientes/${params.id}`),
-          fetch(`/api/clientes/${params.id}/pedidos`),
-          fetch(`/api/clientes/${params.id}/distribuidoras`),
-        ]);
-
-        if (!clienteRes.ok) {
-          throw new Error('Cliente não encontrado');
-        }
-
-        const clienteData = await clienteRes.json();
-        const pedidosData = await pedidosRes.json();
-        const distribuidorasData = await distribuidorasRes.json();
-
-        setCliente(clienteData.data);
-        setPedidos(pedidosData.data);
-        setDistribuidoras(distribuidorasData.data);
-      } catch (error) {
-        setError('Erro ao carregar dados');
-        console.error('Erro ao carregar dados:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [params.id]);
+    setLocalDistribuidoras(distribuidoras);
+  }, [distribuidoras]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -88,7 +68,7 @@ export default function ClienteDetailPage() {
     // Simulate sync API call
     setTimeout(() => {
       // Update the lastSync date for this distribuidora
-      setDistribuidoras(prev =>
+      setLocalDistribuidoras(prev =>
         prev.map(d =>
           d.id === distribuidoraId
             ? { ...d, lastSync: new Date().toISOString() }
@@ -100,26 +80,10 @@ export default function ClienteDetailPage() {
   };
 
   const formatLastSync = (lastSync?: string) => {
-    if (!lastSync) {return 'Nunca sincronizado';}
-
-    const syncDate = new Date(lastSync);
-    const now = new Date();
-    const diffMs = now.getTime() - syncDate.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) {return 'Agora mesmo';}
-    if (diffMins < 60) {return `Há ${diffMins} minuto${diffMins > 1 ? 's' : ''}`;}
-    if (diffHours < 24) {return `Há ${diffHours} hora${diffHours > 1 ? 's' : ''}`;}
-    if (diffDays === 1) {return 'Ontem';}
-    if (diffDays < 7) {return `Há ${diffDays} dias`;}
-
-    return syncDate.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
+    if (!lastSync) {
+      return 'Nunca sincronizado';
+    }
+    return formatRelativeTime(lastSync);
   };
 
   if (isLoading) {
@@ -143,7 +107,7 @@ export default function ClienteDetailPage() {
         </Button>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center text-red-600">{error || 'Cliente não encontrado'}</div>
+            <div className="text-center text-red-600">{error?.message || 'Cliente não encontrado'}</div>
           </CardContent>
         </Card>
       </div>
@@ -223,11 +187,7 @@ export default function ClienteDetailPage() {
               <div>
                 <p className="text-sm text-gray-500">Data de Cadastro</p>
                 <p className="font-medium">
-                  {new Date(cliente.dataCadastro).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
+                  {formatDate(cliente.dataCadastro, 'dd \'de\' MMMM \'de\' yyyy')}
                 </p>
               </div>
             </div>
@@ -344,7 +304,7 @@ export default function ClienteDetailPage() {
                         </span>
                       </div>
                       <p className="text-sm text-gray-500 mt-1">
-                        {new Date(pedido.data).toLocaleDateString('pt-BR')} • {pedido.itens.length} {pedido.itens.length === 1 ? 'item' : 'itens'}
+                        {formatDate(pedido.data)} • {pedido.itens.length} {pedido.itens.length === 1 ? 'item' : 'itens'}
                       </p>
                     </div>
                     <div className="text-right">
@@ -374,7 +334,7 @@ export default function ClienteDetailPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Package className="w-5 h-5" />
-              <CardTitle>Distribuidoras Conectadas ({distribuidoras.length})</CardTitle>
+              <CardTitle>Distribuidoras Conectadas ({localDistribuidoras.length})</CardTitle>
             </div>
             <Button
               variant="ghost"
@@ -391,11 +351,11 @@ export default function ClienteDetailPage() {
         </CardHeader>
         {showDistribuidoras && (
           <CardContent>
-            {distribuidoras.length === 0 ? (
+            {localDistribuidoras.length === 0 ? (
               <p className="text-center text-gray-500 py-8">Nenhuma distribuidora conectada</p>
             ) : (
               <div className="space-y-3">
-                {distribuidoras.map((distribuidora) => (
+                {localDistribuidoras.map((distribuidora) => (
                   <div
                     key={distribuidora.id}
                     className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"

@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import { Cliente } from '@/lib/mock-data/clientes';
+import { useState, useMemo } from 'react';
+import { useGetClientes } from '@/hooks/client/useGetClientes';
+import { useGetLojas } from '@/hooks/loja/useGetLojas';
 import { Loja } from '@/lib/mock-data/lojas';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,44 +20,18 @@ import {
 import { Store, User, CheckCircle2, XCircle, Loader2, Search, X, MapPin } from 'lucide-react';
 
 export default function MultilojasPage() {
-  const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [lojas, setLojas] = useState<Loja[]>([]);
+  const { data: clientes = [], isLoading: isLoadingClientes } = useGetClientes();
+  const { data: lojas = [], isLoading: isLoadingLojas } = useGetLojas();
   const [selectedClienteId, setSelectedClienteId] = useState<string>('');
   const [selectedLojaIds, setSelectedLojaIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
     type: 'success' | 'error' | null;
     message: string;
   }>({ type: null, message: '' });
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [clientesRes, lojasRes] = await Promise.all([
-          fetch('/api/clientes'),
-          fetch('/api/lojas'),
-        ]);
-
-        if (clientesRes.ok) {
-          const clientesData = await clientesRes.json();
-          setClientes(clientesData.data);
-        }
-
-        if (lojasRes.ok) {
-          const lojasData = await lojasRes.json();
-          setLojas(lojasData.data);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchData();
-  }, []);
+  const isLoading = isLoadingClientes || isLoadingLojas;
 
   const handleLojaToggle = (lojaId: string) => {
     setSelectedLojaIds((prev) =>

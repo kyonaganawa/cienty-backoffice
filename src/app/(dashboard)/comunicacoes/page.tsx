@@ -1,7 +1,9 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useGetComunicacoes } from '@/hooks/comunicacao/useGetComunicacoes';
+import { formatDate } from '@/lib/date-utils';
 import {
   Card,
   CardContent,
@@ -26,7 +28,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Comunicacao } from '@/lib/mock-data/comunicacoes';
 import {
   MessageSquare,
   Calendar,
@@ -39,27 +40,10 @@ import {
 
 export default function ComunicacoesPage() {
   const router = useRouter();
-  const [comunicacoes, setComunicacoes] = useState<Comunicacao[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: comunicacoes = [], isLoading } = useGetComunicacoes();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [tipoFilter, setTipoFilter] = useState<string>('all');
-
-  useEffect(() => {
-    async function fetchComunicacoes() {
-      try {
-        const response = await fetch('/api/comunicacoes');
-        const data = await response.json();
-        setComunicacoes(data.data);
-      } catch (error) {
-        console.error('Erro ao carregar comunicações:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchComunicacoes();
-  }, []);
 
   const filteredComunicacoes = useMemo(() => {
     return comunicacoes.filter((comunicacao) => {
@@ -125,14 +109,6 @@ export default function ComunicacoesPage() {
       topbar: 'bg-yellow-100 text-yellow-800',
     };
     return colors[tipo as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    });
   };
 
   if (isLoading) {

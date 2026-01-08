@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Distribuidora } from '@/lib/mock-data/distribuidoras';
+import { useGetDistribuidoraById } from '@/hooks/distributor/useGetDistribuidoraById';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Mail, User, Building2, MapPin, FileText, Activity } from 'lucide-react';
@@ -10,29 +9,7 @@ import { ArrowLeft, Mail, User, Building2, MapPin, FileText, Activity } from 'lu
 export default function DistribuidoraDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [distribuidora, setDistribuidora] = useState<Distribuidora | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchDistribuidora() {
-      try {
-        const response = await fetch(`/api/distribuidoras/${params.id}`);
-        if (!response.ok) {
-          throw new Error('Distribuidora não encontrada');
-        }
-        const data = await response.json();
-        setDistribuidora(data.data);
-      } catch (error) {
-        setError('Erro ao carregar distribuidora');
-        console.error('Erro ao carregar distribuidora:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchDistribuidora();
-  }, [params.id]);
+  const { data: distribuidora, isLoading, error } = useGetDistribuidoraById(params.id as string);
 
   if (isLoading) {
     return (
@@ -55,7 +32,7 @@ export default function DistribuidoraDetailPage() {
         </Button>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center text-red-600">{error || 'Distribuidora não encontrada'}</div>
+            <div className="text-center text-red-600">{error?.message || 'Distribuidora não encontrada'}</div>
           </CardContent>
         </Card>
       </div>

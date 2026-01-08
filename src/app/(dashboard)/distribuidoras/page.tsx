@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useGetDistribuidoras } from '@/hooks/distributor/useGetDistribuidoras';
 import {
   Table,
   TableBody,
@@ -13,32 +14,16 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { Distribuidora } from '@/lib/mock-data/distribuidoras';
 
 export default function DistribuidorasPage() {
   const router = useRouter();
-  const [distribuidoras, setDistribuidoras] = useState<Distribuidora[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: distribuidoras = [], isLoading } = useGetDistribuidoras();
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    async function fetchDistribuidoras() {
-      try {
-        const response = await fetch('/api/distribuidoras');
-        const data = await response.json();
-        setDistribuidoras(data.data);
-      } catch (error) {
-        console.error('Erro ao carregar distribuidoras:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchDistribuidoras();
-  }, []);
-
   const filteredDistribuidoras = useMemo(() => {
-    if (!searchQuery.trim()) {return distribuidoras;}
+    if (!searchQuery.trim()) {
+      return distribuidoras;
+    }
 
     const query = searchQuery.toLowerCase();
     return distribuidoras.filter(
@@ -65,9 +50,7 @@ export default function DistribuidorasPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Distribuidoras</h2>
-        <p className="text-gray-500 mt-2">
-          Gerencie todas as distribuidoras parceiras
-        </p>
+        <p className="text-gray-500 mt-2">Gerencie todas as distribuidoras parceiras</p>
       </div>
 
       <Card>
@@ -112,27 +95,23 @@ export default function DistribuidorasPage() {
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => router.push(`/distribuidoras/${distribuidora.id}`)}
                   >
-                  <TableCell className="font-medium">
-                    {distribuidora.nome}
-                  </TableCell>
-                  <TableCell>{distribuidora.cnpj}</TableCell>
-                  <TableCell>
-                    {distribuidora.cidade}/{distribuidora.estado}
-                  </TableCell>
-                  <TableCell>{distribuidora.responsavel}</TableCell>
-                  <TableCell>{distribuidora.email}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        distribuidora.status === 'ativo'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {distribuidora.status}
-                    </span>
-                  </TableCell>
-                </TableRow>
+                    <TableCell className="font-medium">{distribuidora.nome}</TableCell>
+                    <TableCell>{distribuidora.cnpj}</TableCell>
+                    <TableCell>
+                      {distribuidora.cidade}/{distribuidora.estado}
+                    </TableCell>
+                    <TableCell>{distribuidora.responsavel}</TableCell>
+                    <TableCell>{distribuidora.email}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          distribuidora.status === 'ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {distribuidora.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
                 ))
               )}
             </TableBody>

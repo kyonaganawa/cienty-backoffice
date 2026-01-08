@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Pedido } from '@/lib/mock-data/pedidos';
-import { Cliente } from '@/lib/mock-data/clientes';
-import { Distribuidora } from '@/lib/mock-data/distribuidoras';
+import { useGetPedidoById } from '@/hooks/pedido/useGetPedidoById';
+import { useGetClienteById } from '@/hooks/client/useGetClienteById';
+import { useGetDistribuidoraById } from '@/hooks/distributor/useGetDistribuidoraById';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -20,48 +19,11 @@ import { ArrowLeft, Calendar, User, Building2, Package, DollarSign, FileText } f
 export default function PedidoDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const [pedido, setPedido] = useState<Pedido | null>(null);
-  const [cliente, setCliente] = useState<Cliente | null>(null);
-  const [distribuidora, setDistribuidora] = useState<Distribuidora | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: pedido, isLoading: isLoadingPedido, error } = useGetPedidoById(params.id as string);
+  const { data: cliente } = useGetClienteById(pedido?.clienteId || '');
+  const { data: distribuidora } = useGetDistribuidoraById(pedido?.distribuidoraId || '');
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const pedidoRes = await fetch(`/api/pedidos/${params.id}`);
-        if (!pedidoRes.ok) {
-          throw new Error('Pedido não encontrado');
-        }
-
-        const pedidoData = await pedidoRes.json();
-        setPedido(pedidoData.data);
-
-        // Fetch related data
-        const [clienteRes, distribuidoraRes] = await Promise.all([
-          fetch(`/api/clientes/${pedidoData.data.clienteId}`),
-          fetch(`/api/distribuidoras/${pedidoData.data.distribuidoraId}`),
-        ]);
-
-        if (clienteRes.ok) {
-          const clienteData = await clienteRes.json();
-          setCliente(clienteData.data);
-        }
-
-        if (distribuidoraRes.ok) {
-          const distribuidoraData = await distribuidoraRes.json();
-          setDistribuidora(distribuidoraData.data);
-        }
-      } catch (error) {
-        setError('Erro ao carregar pedido');
-        console.error('Erro ao carregar pedido:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [params.id]);
+  const isLoading = isLoadingPedido;
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -113,7 +75,7 @@ export default function PedidoDetailPage() {
         </Button>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center text-red-600">{error || 'Pedido não encontrado'}</div>
+            <div className="text-center text-red-600">{error?.message || 'Pedido não encontrado'}</div>
           </CardContent>
         </Card>
       </div>
