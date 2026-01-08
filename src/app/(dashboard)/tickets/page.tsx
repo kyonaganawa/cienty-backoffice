@@ -1,39 +1,24 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { useGetTickets } from '@/hooks/ticket/useGetTickets';
 import { Ticket } from '@/lib/mock-data/tickets';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, ChevronUp, AlertCircle, Clock, CheckCircle, XCircle, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { formatDate } from '@/lib/date-utils';
 
 export default function TicketsPage() {
   const router = useRouter();
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: tickets = [], isLoading } = useGetTickets();
   const [expandedSections, setExpandedSections] = useState({
     open: true,
     assigned: true,
     resolved: true,
     closed: false,
   });
-
-  useEffect(() => {
-    async function fetchTickets() {
-      try {
-        const response = await fetch('/api/tickets');
-        const data = await response.json();
-        setTickets(data.data);
-      } catch (error) {
-        console.error('Erro ao carregar tickets:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchTickets();
-  }, []);
 
   const groupedTickets = useMemo(() => {
     const groups = {
@@ -136,25 +121,15 @@ export default function TicketsPage() {
                 {getStatusLabel(status)} ({tickets.length})
               </CardTitle>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => toggleSection(status)}
-            >
-              {isExpanded ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
+            <Button variant="ghost" size="sm" onClick={() => toggleSection(status)}>
+              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </Button>
           </div>
         </CardHeader>
         {isExpanded && (
           <CardContent>
             {tickets.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">
-                Nenhum ticket {getStatusLabel(status).toLowerCase()}
-              </p>
+              <p className="text-center text-gray-500 py-8">Nenhum ticket {getStatusLabel(status).toLowerCase()}</p>
             ) : (
               <div className="space-y-3">
                 {tickets.map((ticket) => (
@@ -166,25 +141,16 @@ export default function TicketsPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold text-gray-900 truncate">
-                            {ticket.titulo}
-                          </h3>
-                          <Badge className={getPrioridadeColor(ticket.prioridade)}>
-                            {getPrioridadeLabel(ticket.prioridade)}
-                          </Badge>
+                          <h3 className="font-semibold text-gray-900 truncate">{ticket.titulo}</h3>
+                          <Badge className={getPrioridadeColor(ticket.prioridade)}>{getPrioridadeLabel(ticket.prioridade)}</Badge>
                         </div>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
                           <span>Cliente: {ticket.clienteNome}</span>
-                          {ticket.ownerNome && (
-                            <span>Responsável: {ticket.ownerNome}</span>
-                          )}
-                          {ticket.pedidoNumero && (
-                            <span>Pedido: {ticket.pedidoNumero}</span>
-                          )}
+                          {ticket.ownerNome && <span>Responsável: {ticket.ownerNome}</span>}
+                          {ticket.pedidoNumero && <span>Pedido: {ticket.pedidoNumero}</span>}
                         </div>
                         <div className="mt-2 text-xs text-gray-500">
-                          Criado em {new Date(ticket.dataCriacao).toLocaleDateString('pt-BR')} por{' '}
-                          {ticket.criadorNome}
+                          Criado em {formatDate(ticket.dataCriacao)} por {ticket.criadorNome}
                         </div>
                       </div>
                       <div className="flex-shrink-0">
@@ -208,9 +174,7 @@ export default function TicketsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Tickets</h2>
-          <p className="text-gray-500 mt-2">
-            Gerencie todos os tickets de suporte
-          </p>
+          <p className="text-gray-500 mt-2">Gerencie todos os tickets de suporte</p>
         </div>
         <Button onClick={() => router.push('/tickets/novo')}>
           <Plus className="w-4 h-4 mr-2" />

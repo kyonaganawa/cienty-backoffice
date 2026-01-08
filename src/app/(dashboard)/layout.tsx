@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/context/auth-context';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { Button } from '@/components/ui/button';
 
 export default function DashboardLayout({

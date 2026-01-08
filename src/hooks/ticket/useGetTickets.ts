@@ -1,16 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ApiHttpClientService } from '@/service/api-http-client.service';
-
-export interface Ticket {
-  id: string;
-  titulo: string;
-  descricao: string;
-  status: 'aberto' | 'em-andamento' | 'aguardando' | 'resolvido' | 'fechado';
-  prioridade: 'baixa' | 'media' | 'alta' | 'urgente';
-  clienteId: string;
-  clienteNome: string;
-  dataCriacao: string;
-}
+import { Ticket } from '@/lib/mock-data/tickets';
 
 export const useGetTickets = () => {
   return useQuery({

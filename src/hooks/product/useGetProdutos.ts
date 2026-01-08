@@ -1,15 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { ApiHttpClientService } from '@/service/api-http-client.service';
-
-export interface Produto {
-  id: string;
-  nome: string;
-  descricao: string;
-  preco: number;
-  estoque: number;
-  categoria: string;
-  ativo: boolean;
-}
+import { Produto } from '@/lib/mock-data/produtos';
 
 export const useGetProdutos = () => {
   return useQuery({
