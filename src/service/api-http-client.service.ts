@@ -4,6 +4,18 @@ interface ApiOptions {
   authenticated?: boolean;
 }
 
+/**
+ * TEMPORARY PLACEHOLDER FOR DEVELOPMENT
+ *
+ * HTTP client configured to work with staging API endpoints.
+ * Uses NEXT_PUBLIC_BASE_URL environment variable for API base URL.
+ *
+ * Current setup:
+ * - Auth: Proxied through /api/auth/login to staging API
+ * - Other endpoints: Mock data via Next.js API routes
+ *
+ * TODO: Update base URL and remove mock endpoints when backend is ready
+ */
 class ApiHttpClient {
   private client: AxiosInstance;
   private token: string | null = null;

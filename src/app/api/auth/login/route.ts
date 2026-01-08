@@ -1,47 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Mock user database
-const mockUsers = [
-  {
-    id: '1',
-    email: 'admin@backoffice.com',
-    password: 'admin123',
-    name: 'Admin User',
-  },
-  {
-    id: '2',
-    email: 'user@backoffice.com',
-    password: 'user123',
-    name: 'Regular User',
-  },
-];
+/**
+ * TEMPORARY PLACEHOLDER FOR DEVELOPMENT
+ *
+ * This route proxies authentication to the staging API to get real access tokens
+ * while developing the platform. This allows admin access to staging environment.
+ *
+ * TODO: Replace with proper authentication implementation when backend is ready
+ *
+ * Staging API: https://api-stg.covalenty.com.br/app/auth/login
+ */
+
+const STAGING_API_URL = 'https://api-stg.covalenty.com.br/app/auth/login';
 
 export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // Mock authentication - find user
-    const user = mockUsers.find(
-      (u) => u.email === email && u.password === password
-    );
+    // Call staging API for authentication
+    const response = await fetch(STAGING_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-    if (!user) {
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
       return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
+        { error: errorData.message || 'Invalid credentials' },
+        { status: response.status }
       );
     }
 
-    // Return user data without password
-    const { password: _, ...userWithoutPassword } = user;
+    const data = await response.json();
 
-    return NextResponse.json({
-      user: userWithoutPassword,
-      token: 'mock-jwt-token',
-    });
+    // Return the staging API response
+    // Expected format: { user: {...}, token: string, refreshToken?: string }
+    return NextResponse.json(data);
   } catch (error) {
+    console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to connect to authentication service' },
       { status: 500 }
     );
   }
