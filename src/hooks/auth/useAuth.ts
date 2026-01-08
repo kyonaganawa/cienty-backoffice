@@ -30,13 +30,13 @@ export const useAuth = () => {
 
       const response = await ApiHttpClientService.post<
         { email: string; password: string },
-        { user: User; accessToken: string; refreshToken?: string }
+        { user: User; token: string; refreshToken?: string }
       >('/api/auth/login', { email, password });
 
       console.info('[useAuth] Login response:', {
         hasUser: !!response.user,
-        hasAccessToken: !!response.accessToken,
-        tokenPreview: response.accessToken ? `${response.accessToken.substring(0, 20)}...` : 'None'
+        hasToken: !!response.token,
+        tokenPreview: response.token ? `${response.token.substring(0, 20)}...` : 'None'
       });
 
       // Store user data
@@ -45,18 +45,18 @@ export const useAuth = () => {
         localStorage.setItem('user', JSON.stringify(response.user));
       }
 
-      // Store and set authentication token
-      dispatch(setToken(response.accessToken));
+      // Store and set authentication token (sent as Authorization header in subsequent requests)
+      dispatch(setToken(response.token));
       if (typeof window !== 'undefined') {
-        localStorage.setItem('token', response.accessToken);
+        localStorage.setItem('token', response.token);
         console.info('[useAuth] Token stored in localStorage');
         if (response.refreshToken) {
           localStorage.setItem('refreshToken', response.refreshToken);
         }
       }
 
-      // Set token in API service for subsequent requests
-      ApiHttpClientService.setToken(response.accessToken);
+      // Set token in API service - will be sent as Authorization header in all requests
+      ApiHttpClientService.setToken(response.token);
       console.info('[useAuth] Token set in ApiHttpClientService');
 
       return true;
