@@ -193,7 +193,7 @@ export default function ClienteDetailPage() {
               <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
               <div>
                 <p className="text-sm text-gray-500">Data de Cadastro</p>
-                <p className="font-medium">
+                <p className="font-medium" suppressHydrationWarning>
                   {formatDate(cliente.createdAt, 'dd \'de\' MMMM \'de\' yyyy')}
                 </p>
               </div>

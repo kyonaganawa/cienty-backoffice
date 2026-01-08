@@ -110,7 +110,7 @@ export default function ClientesPage() {
                         {cliente.active ? 'Ativo' : 'Inativo'}
                       </span>
                     </TableCell>
-                    <TableCell>{formatDate(cliente.createdAt)}</TableCell>
+                    <TableCell suppressHydrationWarning>{formatDate(cliente.createdAt)}</TableCell>
                   </TableRow>
                 ))
               )}
