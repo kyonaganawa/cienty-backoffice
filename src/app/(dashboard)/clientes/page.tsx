@@ -70,15 +70,15 @@ export default function ClientesPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <Table className="table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead>Nome</TableHead>
-                <TableHead>CNPJ</TableHead>
-                <TableHead>Empresa</TableHead>
-                <TableHead>Localização</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Data Cadastro</TableHead>
+                <TableHead className="w-[25%]">Nome</TableHead>
+                <TableHead className="w-[15%]">CNPJ</TableHead>
+                <TableHead className="w-[12%]">Status</TableHead>
+                <TableHead className="w-[13%]">Data Cadastro</TableHead>
+                <TableHead className="w-[18%]">Empresa</TableHead>
+                <TableHead className="w-[17%]">Localização</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -95,12 +95,8 @@ export default function ClientesPage() {
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => router.push(`/clientes/${cliente.id}`)}
                   >
-                    <TableCell className="font-medium">{cliente.name || '-'}</TableCell>
+                    <TableCell className="font-medium truncate">{cliente.name || '-'}</TableCell>
                     <TableCell className="font-mono text-sm">{cliente.cnpj || '-'}</TableCell>
-                    <TableCell>{cliente.company?.name || '-'}</TableCell>
-                    <TableCell>
-                      {cliente.city || '-'}/{cliente.state || '-'}
-                    </TableCell>
                     <TableCell>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -111,6 +107,10 @@ export default function ClientesPage() {
                       </span>
                     </TableCell>
                     <TableCell suppressHydrationWarning>{formatDate(cliente.createdAt)}</TableCell>
+                    <TableCell className="truncate">{cliente.company?.name || '-'}</TableCell>
+                    <TableCell className="truncate">
+                      {cliente.city || '-'}/{cliente.state || '-'}
+                    </TableCell>
                   </TableRow>
                 ))
               )}
