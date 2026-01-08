@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useGetClientes } from '@/hooks/client/useGetClientes';
 import {
   Table,
   TableBody,
@@ -13,32 +14,17 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
-import { Cliente } from '@/lib/mock-data/clientes';
+import { formatDate } from '@/lib/date-utils';
 
 export default function ClientesPage() {
   const router = useRouter();
-  const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: clientes = [], isLoading } = useGetClientes();
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    async function fetchClientes() {
-      try {
-        const response = await fetch('/api/clientes');
-        const data = await response.json();
-        setClientes(data.data);
-      } catch (error) {
-        console.error('Erro ao carregar clientes:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchClientes();
-  }, []);
-
   const filteredClientes = useMemo(() => {
-    if (!searchQuery.trim()) return clientes;
+    if (!searchQuery.trim()) {
+      return clientes;
+    }
 
     const query = searchQuery.toLowerCase();
     return clientes.filter(
@@ -63,9 +49,7 @@ export default function ClientesPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Clientes</h2>
-        <p className="text-gray-500 mt-2">
-          Gerencie todos os clientes cadastrados no sistema
-        </p>
+        <p className="text-gray-500 mt-2">Gerencie todos os clientes cadastrados no sistema</p>
       </div>
 
       <Card>
@@ -109,24 +93,20 @@ export default function ClientesPage() {
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => router.push(`/clientes/${cliente.id}`)}
                   >
-                  <TableCell className="font-medium">{cliente.empresa}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        cliente.status === 'ativo'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {cliente.status}
-                    </span>
-                  </TableCell>
-                  <TableCell>{cliente.telefone}</TableCell>
-                  <TableCell>{cliente.email}</TableCell>
-                  <TableCell>
-                    {new Date(cliente.dataCadastro).toLocaleDateString('pt-BR')}
-                  </TableCell>
-                </TableRow>
+                    <TableCell className="font-medium">{cliente.empresa}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          cliente.status === 'ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {cliente.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>{cliente.telefone}</TableCell>
+                    <TableCell>{cliente.email}</TableCell>
+                    <TableCell>{formatDate(cliente.dataCadastro)}</TableCell>
+                  </TableRow>
                 ))
               )}
             </TableBody>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/app/context/auth-context';
+import { useAuth } from '@/hooks/auth/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,29 +13,30 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { toast } from 'sonner';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isLoading } = useAuth();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setIsLoading(true);
+
+    if (!email || !password) {
+      toast.error('Por favor, preencha todos os campos');
+      return;
+    }
 
     const success = await login(email, password);
 
     if (success) {
+      toast.success('Login realizado com sucesso!');
       router.push('/');
     } else {
-      setError('Credenciais inválidas. Tente novamente.');
+      toast.error('Credenciais inválidas. Tente novamente.');
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -75,11 +76,6 @@ export default function LoginPage() {
                 disabled={isLoading}
               />
             </div>
-            {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-3 rounded-md">
-                {error}
-              </div>
-            )}
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Entrando...' : 'Entrar'}
             </Button>
