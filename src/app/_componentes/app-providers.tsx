@@ -11,44 +11,42 @@ import { ApiHttpClientService } from '@/service/api-http-client.service';
 /**
  * TEMPORARY PLACEHOLDER FOR DEVELOPMENT
  *
- * Initializes auth token from localStorage on app mount.
- * This restores authentication state when using staging API tokens.
+ * Initializes auth token from localStorage BEFORE rendering.
+ * This ensures the token is available for all API requests.
  *
  * TODO: Replace with proper token refresh/validation flow
  */
-function AuthInitializer() {
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      console.info('[AuthInitializer] Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'None');
-      if (token) {
-        ApiHttpClientService.setToken(token);
-        console.info('[AuthInitializer] Token set in ApiHttpClientService');
-      }
+function initializeAuth() {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    console.info('[initializeAuth] Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'None');
+    if (token) {
+      ApiHttpClientService.setToken(token);
+      console.info('[initializeAuth] Token set in ApiHttpClientService');
     }
-  }, []);
-
-  return null;
+  }
 }
 
 export default function AppProviders({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 5 * 60 * 1000, // 5 minutes
-            retry: 1,
-          },
+  // Initialize auth synchronously before creating QueryClient
+  const [queryClient] = useState(() => {
+    // Restore token from localStorage first
+    initializeAuth();
+
+    return new QueryClient({
+      defaultOptions: {
+        queries: {
+          staleTime: 5 * 60 * 1000, // 5 minutes
+          retry: 1,
         },
-      })
-  );
+      },
+    });
+  });
 
   return (
     <ReduxProvider store={store}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <AuthInitializer />
           {children}
           <Toaster position="top-right" richColors />
         </ThemeProvider>
