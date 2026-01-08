@@ -368,7 +368,7 @@ export default function ClienteDetailPage() {
                       </p>
                       <div className="flex items-center gap-1 text-xs text-gray-400 mt-1">
                         <Clock className="w-3 h-3" />
-                        <span>Última sinc: {formatLastSync(distribuidora.lastSync)}</span>
+                        <span suppressHydrationWarning>Última sinc: {formatLastSync(distribuidora.lastSync)}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">

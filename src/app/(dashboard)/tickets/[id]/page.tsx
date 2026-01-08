@@ -255,7 +255,7 @@ export default function TicketDetailPage() {
             </div>
             <div className="p-4 bg-orange-50 rounded-lg">
               <p className="text-sm text-orange-600 font-medium">Criado há</p>
-              <p className="text-lg font-bold text-orange-900 mt-1">
+              <p className="text-lg font-bold text-orange-900 mt-1" suppressHydrationWarning>
                 {Math.floor(
                   (new Date().getTime() - new Date(ticket.dataCriacao).getTime()) /
                     (1000 * 60 * 60 * 24)
