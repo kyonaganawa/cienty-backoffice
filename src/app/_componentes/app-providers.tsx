@@ -19,11 +19,17 @@ import { ApiHttpClientService } from '@/service/api-http-client.service';
 function initializeAuth() {
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
-    console.info('[initializeAuth] Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'None');
+    console.info('[initializeAuth] Checking localStorage for token...');
+    console.info('[initializeAuth] Token present:', !!token);
     if (token) {
+      console.info('[initializeAuth] Token value:', `${token.substring(0, 20)}...`);
       ApiHttpClientService.setToken(token);
-      console.info('[initializeAuth] Token set in ApiHttpClientService');
+      console.info('[initializeAuth] Token successfully set in ApiHttpClientService');
+    } else {
+      console.warn('[initializeAuth] No token found in localStorage');
     }
+  } else {
+    console.warn('[initializeAuth] Window is undefined (SSR)');
   }
 }
 

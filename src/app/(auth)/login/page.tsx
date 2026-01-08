@@ -33,7 +33,8 @@ export default function LoginPage() {
 
     if (success) {
       toast.success('Login realizado com sucesso!');
-      router.push('/');
+      // Force full page reload to ensure token is initialized
+      window.location.href = '/';
     } else {
       toast.error('Credenciais inválidas. Tente novamente.');
     }
