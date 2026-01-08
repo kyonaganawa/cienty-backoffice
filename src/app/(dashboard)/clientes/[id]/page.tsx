@@ -128,8 +128,8 @@ export default function ClienteDetailPage() {
       </div>
 
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">{cliente.empresa}</h2>
-        <p className="text-gray-500 mt-2">Detalhes da empresa</p>
+        <h2 className="text-3xl font-bold tracking-tight">{cliente.name}</h2>
+        <p className="text-gray-500 mt-2">Detalhes do cliente</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -139,24 +139,31 @@ export default function ClienteDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+              <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">Email</p>
-                <p className="font-medium">{cliente.email}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Telefone</p>
-                <p className="font-medium">{cliente.telefone}</p>
+                <p className="text-sm text-gray-500">CNPJ</p>
+                <p className="font-medium font-mono text-sm">{cliente.cnpj}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
               <div>
                 <p className="text-sm text-gray-500">Empresa</p>
-                <p className="font-medium">{cliente.empresa}</p>
+                <p className="font-medium">{cliente.company.name}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-gray-500">Telefone</p>
+                <p className="font-medium">{cliente.phone || 'Não informado'}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+              <div>
+                <p className="text-sm text-gray-500">Email Principal</p>
+                <p className="font-medium">{cliente.pharmacyContacts[0]?.email || 'Não informado'}</p>
               </div>
             </div>
           </CardContent>
@@ -173,12 +180,12 @@ export default function ClienteDetailPage() {
                 <p className="text-sm text-gray-500">Status</p>
                 <span
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    cliente.status === 'ativo'
+                    cliente.active
                       ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
                   }`}
                 >
-                  {cliente.status}
+                  {cliente.active ? 'Ativo' : 'Inativo'}
                 </span>
               </div>
             </div>
@@ -187,7 +194,7 @@ export default function ClienteDetailPage() {
               <div>
                 <p className="text-sm text-gray-500">Data de Cadastro</p>
                 <p className="font-medium">
-                  {formatDate(cliente.dataCadastro, 'dd \'de\' MMMM \'de\' yyyy')}
+                  {formatDate(cliente.createdAt, 'dd \'de\' MMMM \'de\' yyyy')}
                 </p>
               </div>
             </div>
@@ -202,22 +209,22 @@ export default function ClienteDetailPage() {
         </Card>
       </div>
 
-      {/* Users Section */}
+      {/* Contacts Section */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
             <User className="w-5 h-5" />
-            <CardTitle>Usuários ({cliente.usuarios?.length || 0})</CardTitle>
+            <CardTitle>Contatos ({cliente.pharmacyContacts?.length || 0})</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
-          {!cliente.usuarios || cliente.usuarios.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">Nenhum usuário cadastrado</p>
+          {!cliente.pharmacyContacts || cliente.pharmacyContacts.length === 0 ? (
+            <p className="text-center text-gray-500 py-8">Nenhum contato cadastrado</p>
           ) : (
             <div className="space-y-3">
-              {cliente.usuarios.map((usuario) => (
+              {cliente.pharmacyContacts.map((contact) => (
                 <div
-                  key={usuario.id}
+                  key={contact.id}
                   className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex-1">
@@ -226,22 +233,26 @@ export default function ClienteDetailPage() {
                         <User className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="font-semibold">{usuario.nome}</p>
-                        {usuario.cargo && (
-                          <p className="text-sm text-gray-500">{usuario.cargo}</p>
+                        <p className="font-semibold">{contact.name}</p>
+                        {contact.position && (
+                          <p className="text-sm text-gray-500">{contact.position}</p>
                         )}
                       </div>
                     </div>
                   </div>
                   <div className="text-right space-y-1">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Mail className="w-4 h-4" />
-                      <span>{usuario.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone className="w-4 h-4" />
-                      <span>{usuario.telefone}</span>
-                    </div>
+                    {contact.email && (
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Mail className="w-4 h-4" />
+                        <span>{contact.email}</span>
+                      </div>
+                    )}
+                    {contact.phone && (
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Phone className="w-4 h-4" />
+                        <span>{contact.phone}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

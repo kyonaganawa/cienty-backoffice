@@ -29,11 +29,12 @@ export default function ClientesPage() {
     const query = searchQuery.toLowerCase();
     return clientes.filter(
       (cliente) =>
-        cliente.nome.toLowerCase().includes(query) ||
-        cliente.email.toLowerCase().includes(query) ||
-        cliente.telefone.toLowerCase().includes(query) ||
-        cliente.empresa.toLowerCase().includes(query) ||
-        cliente.status.toLowerCase().includes(query)
+        cliente.name.toLowerCase().includes(query) ||
+        cliente.cnpj.toLowerCase().includes(query) ||
+        (cliente.phone?.toLowerCase() || '').includes(query) ||
+        cliente.company.name.toLowerCase().includes(query) ||
+        cliente.city.toLowerCase().includes(query) ||
+        cliente.state.toLowerCase().includes(query)
     );
   }, [clientes, searchQuery]);
 
@@ -60,7 +61,7 @@ export default function ClientesPage() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Buscar por nome, email, empresa..."
+                placeholder="Buscar por nome, CNPJ, empresa, cidade..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10"
@@ -72,17 +73,18 @@ export default function ClientesPage() {
           <Table>
             <TableHeader>
               <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>CNPJ</TableHead>
                 <TableHead>Empresa</TableHead>
+                <TableHead>Localização</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Telefone</TableHead>
-                <TableHead>Email</TableHead>
                 <TableHead>Data Cadastro</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredClientes.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                  <TableCell colSpan={6} className="text-center text-gray-500 py-8">
                     Nenhum cliente encontrado
                   </TableCell>
                 </TableRow>
@@ -93,19 +95,22 @@ export default function ClientesPage() {
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => router.push(`/clientes/${cliente.id}`)}
                   >
-                    <TableCell className="font-medium">{cliente.empresa}</TableCell>
+                    <TableCell className="font-medium">{cliente.name}</TableCell>
+                    <TableCell className="font-mono text-sm">{cliente.cnpj}</TableCell>
+                    <TableCell>{cliente.company.name}</TableCell>
+                    <TableCell>
+                      {cliente.city}/{cliente.state}
+                    </TableCell>
                     <TableCell>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          cliente.status === 'ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          cliente.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                         }`}
                       >
-                        {cliente.status}
+                        {cliente.active ? 'Ativo' : 'Inativo'}
                       </span>
                     </TableCell>
-                    <TableCell>{cliente.telefone}</TableCell>
-                    <TableCell>{cliente.email}</TableCell>
-                    <TableCell>{formatDate(cliente.dataCadastro)}</TableCell>
+                    <TableCell>{formatDate(cliente.createdAt)}</TableCell>
                   </TableRow>
                 ))
               )}
