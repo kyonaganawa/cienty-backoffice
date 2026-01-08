@@ -8,6 +8,14 @@ export const useGetClientes = () => {
     queryFn: async () => {
       // Staging API returns array directly, not wrapped in { data: [...] }
       const response = await ApiHttpClientService.get<void, Cliente[]>('/api/clientes');
+      console.info('[useGetClientes] Response:', Array.isArray(response) ? `Array with ${response.length} items` : typeof response);
+
+      // Ensure we always return an array
+      if (!response) {
+        console.warn('[useGetClientes] Response is null/undefined, returning empty array');
+        return [];
+      }
+
       return response;
     },
     staleTime: 5 * 60 * 1000,

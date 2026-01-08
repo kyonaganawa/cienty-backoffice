@@ -70,6 +70,7 @@ class ApiHttpClient {
   async get<TParams, TResponse>(endpoint: string, params?: TParams, options?: ApiOptions): Promise<TResponse> {
     const config: AxiosRequestConfig = { params };
     const response = await this.client.get<TResponse>(endpoint, config);
+    console.info('[ApiHttpClient.get] Response status:', response.status, 'Data type:', Array.isArray(response.data) ? 'array' : typeof response.data);
     return response.data;
   }
 
