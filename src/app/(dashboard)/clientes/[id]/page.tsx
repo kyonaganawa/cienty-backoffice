@@ -100,7 +100,7 @@ export default function ClienteDetailPage() {
   };
 
   const formatLastSync = (lastSync?: string) => {
-    if (!lastSync) return 'Nunca sincronizado';
+    if (!lastSync) {return 'Nunca sincronizado';}
 
     const syncDate = new Date(lastSync);
     const now = new Date();
@@ -109,11 +109,11 @@ export default function ClienteDetailPage() {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return 'Agora mesmo';
-    if (diffMins < 60) return `Há ${diffMins} minuto${diffMins > 1 ? 's' : ''}`;
-    if (diffHours < 24) return `Há ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
-    if (diffDays === 1) return 'Ontem';
-    if (diffDays < 7) return `Há ${diffDays} dias`;
+    if (diffMins < 1) {return 'Agora mesmo';}
+    if (diffMins < 60) {return `Há ${diffMins} minuto${diffMins > 1 ? 's' : ''}`;}
+    if (diffHours < 24) {return `Há ${diffHours} hora${diffHours > 1 ? 's' : ''}`;}
+    if (diffDays === 1) {return 'Ontem';}
+    if (diffDays < 7) {return `Há ${diffDays} dias`;}
 
     return syncDate.toLocaleDateString('pt-BR', {
       day: '2-digit',

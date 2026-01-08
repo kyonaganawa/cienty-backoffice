@@ -125,7 +125,7 @@ export default function RestaurarCarrinhoPage() {
   }, [usuarioSelecionado]);
 
   async function fetchCarrinhos() {
-    if (!clienteSelecionado || !usuarioSelecionado) return;
+    if (!clienteSelecionado || !usuarioSelecionado) {return;}
 
     setIsLoadingCarrinhos(true);
     setRestoreStatus({ type: null, message: '' });
@@ -151,7 +151,7 @@ export default function RestaurarCarrinhoPage() {
   }
 
   const handleRestaurarCarrinho = async () => {
-    if (!carrinhoParaRestaurar) return;
+    if (!carrinhoParaRestaurar) {return;}
 
     setIsRestoring(true);
     setRestoreStatus({ type: null, message: '' });

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SearchStoreState {
   query: string;
-  filters: Record<string, any>;
+  filters: Record<string, unknown>;
 }
 
 const initialState: SearchStoreState = {
@@ -17,7 +17,7 @@ export const searchSlice = createSlice({
     setSearchQuery: (state, action: PayloadAction<string>) => {
       state.query = action.payload;
     },
-    setFilters: (state, action: PayloadAction<Record<string, any>>) => {
+    setFilters: (state, action: PayloadAction<Record<string, unknown>>) => {
       state.filters = action.payload;
     },
     clearSearch: (state) => {

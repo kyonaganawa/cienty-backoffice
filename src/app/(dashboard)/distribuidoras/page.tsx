@@ -38,7 +38,7 @@ export default function DistribuidorasPage() {
   }, []);
 
   const filteredDistribuidoras = useMemo(() => {
-    if (!searchQuery.trim()) return distribuidoras;
+    if (!searchQuery.trim()) {return distribuidoras;}
 
     const query = searchQuery.toLowerCase();
     return distribuidoras.filter(

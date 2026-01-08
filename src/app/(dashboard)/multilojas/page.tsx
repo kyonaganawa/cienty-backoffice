@@ -71,7 +71,7 @@ export default function MultilojasPage() {
   };
 
   const filteredLojas = useMemo(() => {
-    if (!searchQuery.trim()) return lojas;
+    if (!searchQuery.trim()) {return lojas;}
 
     const query = searchQuery.toLowerCase();
     return lojas.filter(

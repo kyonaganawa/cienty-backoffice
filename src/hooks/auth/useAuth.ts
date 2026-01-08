@@ -4,10 +4,16 @@ import { setUser, setLoading, setError, logout as logoutAction } from '@/store/a
 import { useRouter } from 'next/navigation';
 import { ApiHttpClientService } from '@/service/api-http-client.service';
 
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
 export const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { user, token } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
@@ -15,7 +21,7 @@ export const useAuth = () => {
 
       const response = await ApiHttpClientService.post<
         { email: string; password: string },
-        { user: any; token: string }
+        { user: User; token: string }
       >('/api/auth/login', { email, password });
 
       dispatch(setUser(response.user));
@@ -24,7 +30,7 @@ export const useAuth = () => {
       }
 
       return true;
-    } catch (error) {
+    } catch {
       dispatch(setError('Credenciais inválidas'));
       return false;
     }

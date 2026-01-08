@@ -38,7 +38,7 @@ export default function ProdutosPage() {
   }, []);
 
   const filteredProdutos = useMemo(() => {
-    if (!searchQuery.trim()) return produtos;
+    if (!searchQuery.trim()) {return produtos;}
 
     const query = searchQuery.toLowerCase();
     return produtos.filter(
