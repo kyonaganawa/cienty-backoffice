@@ -6,8 +6,9 @@ export const useGetClientes = () => {
   return useQuery({
     queryKey: ['clientes'],
     queryFn: async () => {
-      const response = await ApiHttpClientService.get<void, { data: Cliente[]; total: number }>('/api/clientes');
-      return response.data;
+      // Staging API returns array directly, not wrapped in { data: [...] }
+      const response = await ApiHttpClientService.get<void, Cliente[]>('/api/clientes');
+      return response;
     },
     staleTime: 5 * 60 * 1000,
   });
