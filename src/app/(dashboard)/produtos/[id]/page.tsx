@@ -4,6 +4,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useGetProdutoById } from '@/hooks/product/useGetProdutoById';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { LoadingState, InfoField, StatusBadge } from '@/components/common';
+import { formatPrice } from '@/lib/format-utils';
 import { ArrowLeft, Package, Tag, Layers, DollarSign, Activity, FileText } from 'lucide-react';
 
 export default function ProdutoDetailPage() {
@@ -11,19 +13,8 @@ export default function ProdutoDetailPage() {
   const router = useRouter();
   const { data: produto, isLoading, error } = useGetProdutoById(params.id as string);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(price);
-  };
-
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error || !produto) {
@@ -70,34 +61,10 @@ export default function ProdutoDetailPage() {
             <CardTitle>Informações do Produto</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <Package className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Nome</p>
-                <p className="font-medium">{produto.nome}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Tag className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Código</p>
-                <p className="font-medium font-mono">{produto.codigo}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Layers className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Categoria</p>
-                <p className="font-medium">{produto.categoria}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <FileText className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Descrição</p>
-                <p className="font-medium">{produto.descricao}</p>
-              </div>
-            </div>
+            <InfoField icon={Package} label="Nome" value={produto.nome} />
+            <InfoField icon={Tag} label="Código" value={<span className="font-mono">{produto.codigo}</span>} />
+            <InfoField icon={Layers} label="Categoria" value={produto.categoria} />
+            <InfoField icon={FileText} label="Descrição" value={produto.descricao} />
           </CardContent>
         </Card>
 
