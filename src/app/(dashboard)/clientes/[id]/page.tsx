@@ -7,9 +7,11 @@ import { useGetClientePedidos } from '@/hooks/client/useGetClientePedidos';
 import { useGetClienteDistribuidoras } from '@/hooks/client/useGetClienteDistribuidoras';
 import { Distribuidora } from '@/lib/mock-data/distribuidoras';
 import { formatRelativeTime, formatDate } from '@/lib/date-utils';
+import { formatPrice, getOrderStatusColor, getOrderStatusLabel } from '@/lib/format-utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ChevronDown, ChevronUp, ShoppingCart, Package, User, RefreshCw, Clock } from 'lucide-react';
+import { LoadingState, StatusBadge, InfoField, CollapsibleCard } from '@/components/common';
+import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ShoppingCart, Package, User, RefreshCw, Clock } from 'lucide-react';
 
 export default function ClienteDetailPage() {
   const params = useParams();
@@ -31,35 +33,6 @@ export default function ClienteDetailPage() {
   useEffect(() => {
     setLocalDistribuidoras(distribuidoras);
   }, [distribuidoras]);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(price);
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors = {
-      pendente: 'bg-yellow-100 text-yellow-800',
-      em_processamento: 'bg-blue-100 text-blue-800',
-      enviado: 'bg-purple-100 text-purple-800',
-      entregue: 'bg-green-100 text-green-800',
-      cancelado: 'bg-red-100 text-red-800',
-    };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      pendente: 'Pendente',
-      em_processamento: 'Em Processamento',
-      enviado: 'Enviado',
-      entregue: 'Entregue',
-      cancelado: 'Cancelado',
-    };
-    return labels[status as keyof typeof labels] || status;
-  };
 
   const handleSyncDistribuidora = async (e: React.MouseEvent, distribuidoraId: string) => {
     e.stopPropagation();
@@ -87,11 +60,7 @@ export default function ClienteDetailPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error || !cliente) {
@@ -138,34 +107,14 @@ export default function ClienteDetailPage() {
             <CardTitle>Informações Gerais</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">CNPJ</p>
-                <p className="font-medium font-mono text-sm">{cliente.cnpj}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Empresa</p>
-                <p className="font-medium">{cliente.company.name}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Telefone</p>
-                <p className="font-medium">{cliente.phone || 'Não informado'}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Email Principal</p>
-                <p className="font-medium">{cliente.pharmacyContacts[0]?.email || 'Não informado'}</p>
-              </div>
-            </div>
+            <InfoField
+              icon={Building2}
+              label="CNPJ"
+              value={<span className="font-mono text-sm">{cliente.cnpj}</span>}
+            />
+            <InfoField icon={Building2} label="Empresa" value={cliente.company.name} />
+            <InfoField icon={Phone} label="Telefone" value={cliente.phone || 'Não informado'} />
+            <InfoField icon={Mail} label="Email Principal" value={cliente.pharmacyContacts[0]?.email || 'Não informado'} />
           </CardContent>
         </Card>
 
@@ -174,37 +123,15 @@ export default function ClienteDetailPage() {
             <CardTitle>Status e Informações</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <Activity className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Status</p>
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    cliente.active
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {cliente.active ? 'Ativo' : 'Inativo'}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Data de Cadastro</p>
-                <p className="font-medium" suppressHydrationWarning>
-                  {formatDate(cliente.createdAt, 'dd \'de\' MMMM \'de\' yyyy')}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-5 h-5" />
-              <div>
-                <p className="text-sm text-gray-500">ID</p>
-                <p className="font-mono text-sm">{cliente.id}</p>
-              </div>
-            </div>
+            <InfoField icon={Activity} label="Status" value={<StatusBadge active={cliente.active} />} />
+            <InfoField
+              icon={Calendar}
+              label="Data de Cadastro"
+              value={
+                <span suppressHydrationWarning>{formatDate(cliente.createdAt, 'dd \'de\' MMMM \'de\' yyyy')}</span>
+              }
+            />
+            <InfoField icon={Building2} label="ID" value={<span className="font-mono text-sm">{cliente.id}</span>} />
           </CardContent>
         </Card>
       </div>
