@@ -12,8 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { SearchBar, StatusBadge, PageHeader, LoadingState } from '@/components/common';
 import { formatDate } from '@/lib/date-utils';
 
 export default function ClientesPage() {
@@ -39,34 +38,25 @@ export default function ClientesPage() {
   }, [clientes, searchQuery]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando clientes...</div>
-      </div>
-    );
+    return <LoadingState message="Carregando clientes..." />;
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Clientes</h2>
-        <p className="text-gray-500 mt-2">Gerencie todos os clientes cadastrados no sistema</p>
-      </div>
+      <PageHeader
+        title="Clientes"
+        description="Gerencie todos os clientes cadastrados no sistema"
+      />
 
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <CardTitle>Lista de Clientes ({filteredClientes.length})</CardTitle>
-            <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Buscar por nome, CNPJ, empresa, cidade..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Buscar por nome, CNPJ, empresa, cidade..."
+            />
           </div>
         </CardHeader>
         <CardContent>
@@ -98,13 +88,7 @@ export default function ClientesPage() {
                     <TableCell className="font-medium truncate">{cliente.name || '-'}</TableCell>
                     <TableCell className="font-mono text-sm">{cliente.cnpj || '-'}</TableCell>
                     <TableCell>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          cliente.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {cliente.active ? 'Ativo' : 'Inativo'}
-                      </span>
+                      <StatusBadge active={cliente.active} />
                     </TableCell>
                     <TableCell suppressHydrationWarning>{formatDate(cliente.createdAt)}</TableCell>
                     <TableCell className="truncate">{cliente.company?.name || '-'}</TableCell>
