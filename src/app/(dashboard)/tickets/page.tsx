@@ -6,7 +6,7 @@ import { useGetTickets } from '@/hooks/ticket/useGetTickets';
 import { Ticket } from '@/lib/mock-data/tickets';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, ChevronUp, AlertCircle, Clock, CheckCircle, XCircle, Plus } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertCircle, Clock, CheckCircle, XCircle, Plus, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LoadingState, PageHeader, EmptyState } from '@/components/common';
 import { formatDate } from '@/lib/date-utils';
@@ -152,10 +152,16 @@ export default function TicketsPage() {
         title="Tickets"
         description="Gerencie todos os tickets de suporte"
         action={
-          <Button onClick={() => router.push('/tickets/novo')}>
-            <Plus className="w-4 h-4 mr-2" />
-            Criar Ticket
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => router.push('/tickets/dashboard')}>
+              <LayoutDashboard className="w-4 h-4 mr-2" />
+              Dashboard
+            </Button>
+            <Button onClick={() => router.push('/tickets/novo')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Criar Ticket
+            </Button>
+          </div>
         }
       />
 
