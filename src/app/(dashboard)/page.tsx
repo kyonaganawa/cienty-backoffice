@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Users, Building2, Package, Ticket, Store, Clock, AlertTriangle, MessageSquare, Layers, ShoppingCart } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { PageHeader } from '@/components/common';
 
 const menuItems = [
   {
@@ -80,12 +81,7 @@ const menuItems = [
 export default function HomePage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-gray-500 mt-2">
-          Bem-vindo ao sistema de gerenciamento
-        </p>
-      </div>
+      <PageHeader title="Dashboard" description="Bem-vindo ao sistema de gerenciamento" />
 
       <Alert variant="destructive">
         <AlertTriangle className="h-4 w-4" />

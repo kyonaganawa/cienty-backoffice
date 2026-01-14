@@ -14,7 +14,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { LoadingState, InfoField, ColoredBadge } from '@/components/common';
 import { ArrowLeft, Calendar, User, Building2, Package, DollarSign, FileText } from 'lucide-react';
+import { formatDate } from '@/lib/date-utils';
+import { formatPrice, getOrderStatusColor, getOrderStatusLabel } from '@/lib/format-utils';
 
 export default function PedidoDetailPage() {
   const params = useParams();
@@ -25,41 +28,8 @@ export default function PedidoDetailPage() {
 
   const isLoading = isLoadingPedido;
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(price);
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors = {
-      pendente: 'bg-yellow-100 text-yellow-800',
-      em_processamento: 'bg-blue-100 text-blue-800',
-      enviado: 'bg-purple-100 text-purple-800',
-      entregue: 'bg-green-100 text-green-800',
-      cancelado: 'bg-red-100 text-red-800',
-    };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      pendente: 'Pendente',
-      em_processamento: 'Em Processamento',
-      enviado: 'Enviado',
-      entregue: 'Entregue',
-      cancelado: 'Cancelado',
-    };
-    return labels[status as keyof typeof labels] || status;
-  };
-
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error || !pedido) {
@@ -106,48 +76,22 @@ export default function PedidoDetailPage() {
             <CardTitle>Informações do Pedido</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <FileText className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Número do Pedido</p>
-                <p className="font-medium">{pedido.numero}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Data do Pedido</p>
-                <p className="font-medium">
-                  {new Date(pedido.data).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Package className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Status</p>
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                    pedido.status
-                  )}`}
-                >
-                  {getStatusLabel(pedido.status)}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <DollarSign className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Valor Total</p>
-                <p className="font-bold text-2xl text-green-600">
-                  {formatPrice(pedido.total)}
-                </p>
-              </div>
-            </div>
+            <InfoField icon={FileText} label="Número do Pedido" value={pedido.numero} />
+            <InfoField
+              icon={Calendar}
+              label="Data do Pedido"
+              value={<span suppressHydrationWarning>{formatDate(pedido.data, "dd 'de' MMMM 'de' yyyy")}</span>}
+            />
+            <InfoField
+              icon={Package}
+              label="Status"
+              value={<ColoredBadge text={getOrderStatusLabel(pedido.status)} colorClasses={getOrderStatusColor(pedido.status)} />}
+            />
+            <InfoField
+              icon={DollarSign}
+              label="Valor Total"
+              value={<span className="font-bold text-2xl text-green-600">{formatPrice(pedido.total)}</span>}
+            />
           </CardContent>
         </Card>
 
@@ -157,44 +101,42 @@ export default function PedidoDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {cliente && (
-              <div className="flex items-start gap-3">
-                <User className="w-5 h-5 text-gray-400 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-500">Cliente</p>
-                  <p
-                    className="font-medium text-blue-600 cursor-pointer hover:underline"
-                    onClick={() => router.push(`/clientes/${cliente.id}`)}
-                  >
-                    {cliente.nome}
-                  </p>
-                  <p className="text-sm text-gray-500">{cliente.empresa}</p>
-                </div>
-              </div>
+              <InfoField
+                icon={User}
+                label="Cliente"
+                value={
+                  <div>
+                    <p
+                      className="font-medium text-blue-600 cursor-pointer hover:underline"
+                      onClick={() => router.push(`/clientes/${cliente.id}`)}
+                    >
+                      {cliente.name}
+                    </p>
+                    <p className="text-sm text-gray-500">{cliente.company.name}</p>
+                  </div>
+                }
+              />
             )}
             {distribuidora && (
-              <div className="flex items-start gap-3">
-                <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-500">Distribuidora</p>
-                  <p
-                    className="font-medium text-blue-600 cursor-pointer hover:underline"
-                    onClick={() => router.push(`/distribuidoras/${distribuidora.id}`)}
-                  >
-                    {distribuidora.nome}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {distribuidora.cidade}/{distribuidora.estado}
-                  </p>
-                </div>
-              </div>
+              <InfoField
+                icon={Building2}
+                label="Distribuidora"
+                value={
+                  <div>
+                    <p
+                      className="font-medium text-blue-600 cursor-pointer hover:underline"
+                      onClick={() => router.push(`/distribuidoras/${distribuidora.id}`)}
+                    >
+                      {distribuidora.nome}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {distribuidora.cidade}/{distribuidora.estado}
+                    </p>
+                  </div>
+                }
+              />
             )}
-            <div className="flex items-start gap-3">
-              <div className="w-5 h-5" />
-              <div>
-                <p className="text-sm text-gray-500">ID do Pedido</p>
-                <p className="font-mono text-sm">{pedido.id}</p>
-              </div>
-            </div>
+            <InfoField icon={FileText} label="ID do Pedido" value={<span className="font-mono text-sm">{pedido.id}</span>} />
           </CardContent>
         </Card>
       </div>
@@ -250,7 +192,7 @@ export default function PedidoDetailPage() {
             <div className="p-4 bg-purple-50 rounded-lg">
               <p className="text-sm text-purple-600 font-medium">Status</p>
               <p className="text-lg font-bold text-purple-900 mt-1 capitalize">
-                {getStatusLabel(pedido.status)}
+                {getOrderStatusLabel(pedido.status)}
               </p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg">

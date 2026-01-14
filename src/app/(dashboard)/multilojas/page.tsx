@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { LoadingState, PageHeader, EmptyState } from '@/components/common';
 import { Store, User, CheckCircle2, XCircle, Loader2, Search, X, MapPin } from 'lucide-react';
 
 export default function MultilojasPage() {
@@ -123,21 +124,12 @@ export default function MultilojasPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Multilojas</h2>
-        <p className="text-gray-500 mt-2">
-          Vincule usuários a múltiplas lojas
-        </p>
-      </div>
+      <PageHeader title="Multilojas" description="Vincule usuários a múltiplas lojas" />
 
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -263,9 +255,7 @@ export default function MultilojasPage() {
                 {/* Stores List */}
                 <div className="space-y-2 max-h-[500px] overflow-y-auto">
                   {filteredLojas.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">
-                      Nenhuma loja encontrada
-                    </p>
+                    <EmptyState message="Nenhuma loja encontrada" />
                   ) : (
                     filteredLojas.map((loja) => (
                       <div

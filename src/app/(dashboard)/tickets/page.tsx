@@ -8,7 +8,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, ChevronUp, AlertCircle, Clock, CheckCircle, XCircle, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LoadingState, PageHeader, EmptyState, ColoredBadge } from '@/components/common';
 import { formatDate } from '@/lib/date-utils';
+import { getTicketPriorityColor, getTicketPriorityLabel } from '@/lib/format-utils';
 
 export default function TicketsPage() {
   const router = useRouter();
@@ -80,32 +82,9 @@ export default function TicketsPage() {
     return <Icon className="w-5 h-5" />;
   };
 
-  const getPrioridadeColor = (prioridade: string) => {
-    const colors = {
-      baixa: 'bg-gray-100 text-gray-700',
-      media: 'bg-yellow-100 text-yellow-700',
-      alta: 'bg-orange-100 text-orange-700',
-      urgente: 'bg-red-100 text-red-700',
-    };
-    return colors[prioridade as keyof typeof colors] || 'bg-gray-100 text-gray-700';
-  };
-
-  const getPrioridadeLabel = (prioridade: string) => {
-    const labels = {
-      baixa: 'Baixa',
-      media: 'Média',
-      alta: 'Alta',
-      urgente: 'Urgente',
-    };
-    return labels[prioridade as keyof typeof labels] || prioridade;
-  };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando tickets...</div>
-      </div>
-    );
+    return <LoadingState message="Carregando tickets..." />;
   }
 
   const renderTicketGroup = (status: keyof typeof groupedTickets, tickets: Ticket[]) => {
@@ -129,7 +108,7 @@ export default function TicketsPage() {
         {isExpanded && (
           <CardContent>
             {tickets.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">Nenhum ticket {getStatusLabel(status).toLowerCase()}</p>
+              <EmptyState message={`Nenhum ticket ${getStatusLabel(status).toLowerCase()}`} />
             ) : (
               <div className="space-y-3">
                 {tickets.map((ticket) => (
@@ -142,7 +121,7 @@ export default function TicketsPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-semibold text-gray-900 truncate">{ticket.titulo}</h3>
-                          <Badge className={getPrioridadeColor(ticket.prioridade)}>{getPrioridadeLabel(ticket.prioridade)}</Badge>
+                          <ColoredBadge text={getTicketPriorityLabel(ticket.prioridade)} colorClasses={getTicketPriorityColor(ticket.prioridade)} />
                         </div>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
                           <span>Cliente: {ticket.clienteNome}</span>
@@ -154,9 +133,7 @@ export default function TicketsPage() {
                         </div>
                       </div>
                       <div className="flex-shrink-0">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>
-                          {getStatusLabel(ticket.status)}
-                        </span>
+                        <ColoredBadge text={getStatusLabel(ticket.status)} colorClasses={getStatusColor(ticket.status)} />
                       </div>
                     </div>
                   </div>
@@ -171,16 +148,16 @@ export default function TicketsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Tickets</h2>
-          <p className="text-gray-500 mt-2">Gerencie todos os tickets de suporte</p>
-        </div>
-        <Button onClick={() => router.push('/tickets/novo')}>
-          <Plus className="w-4 h-4 mr-2" />
-          Criar Ticket
-        </Button>
-      </div>
+      <PageHeader
+        title="Tickets"
+        description="Gerencie todos os tickets de suporte"
+        action={
+          <Button onClick={() => router.push('/tickets/novo')}>
+            <Plus className="w-4 h-4 mr-2" />
+            Criar Ticket
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>

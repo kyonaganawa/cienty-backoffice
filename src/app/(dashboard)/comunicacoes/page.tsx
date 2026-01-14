@@ -28,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { LoadingState, PageHeader, EmptyState } from '@/components/common';
 import {
   MessageSquare,
   Calendar,
@@ -112,34 +113,21 @@ export default function ComunicacoesPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando comunicações...</p>
-        </div>
-      </div>
-    );
+    return <LoadingState message="Carregando comunicações..." />;
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Comunicações</h2>
-          <p className="text-gray-500 mt-2">
-            Gerencie mensagens e anúncios para seus usuários
-          </p>
-        </div>
-        <Button
-          onClick={() => router.push('/comunicacoes/novo')}
-          className="gap-2"
-        >
-          <Plus className="w-4 h-4" />
-          Nova Comunicação
-        </Button>
-      </div>
+      <PageHeader
+        title="Comunicações"
+        description="Gerencie mensagens e anúncios para seus usuários"
+        action={
+          <Button onClick={() => router.push('/comunicacoes/novo')} className="gap-2">
+            <Plus className="w-4 h-4" />
+            Nova Comunicação
+          </Button>
+        }
+      />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -319,7 +307,7 @@ export default function ComunicacoesPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm">
+                    <div className="text-sm" suppressHydrationWarning>
                       <p className="flex items-center gap-1">
                         <Calendar className="w-3 h-3 text-gray-400" />
                         {formatDate(comunicacao.dataInicio)}
@@ -366,11 +354,7 @@ export default function ComunicacoesPage() {
           </Table>
 
           {filteredComunicacoes.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">
-                Nenhuma comunicação encontrada com os filtros aplicados
-              </p>
-            </div>
+            <EmptyState message="Nenhuma comunicação encontrada com os filtros aplicados" />
           )}
         </CardContent>
       </Card>

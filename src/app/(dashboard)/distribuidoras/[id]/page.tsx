@@ -4,7 +4,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useGetDistribuidoraById } from '@/hooks/distributor/useGetDistribuidoraById';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Mail, User, Building2, MapPin, FileText, Activity } from 'lucide-react';
+import { LoadingState, StatusBadge, InfoField } from '@/components/common';
+import { ArrowLeft, Mail, User, Building2, MapPin, FileText } from 'lucide-react';
 
 export default function DistribuidoraDetailPage() {
   const params = useParams();
@@ -12,11 +13,7 @@ export default function DistribuidoraDetailPage() {
   const { data: distribuidora, isLoading, error } = useGetDistribuidoraById(params.id as string);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error || !distribuidora) {
@@ -63,29 +60,9 @@ export default function DistribuidoraDetailPage() {
             <CardTitle>Informações da Empresa</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Nome da Empresa</p>
-                <p className="font-medium">{distribuidora.nome}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <FileText className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">CNPJ</p>
-                <p className="font-medium font-mono">{distribuidora.cnpj}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Localização</p>
-                <p className="font-medium">
-                  {distribuidora.cidade} - {distribuidora.estado}
-                </p>
-              </div>
-            </div>
+            <InfoField icon={Building2} label="Nome da Empresa" value={distribuidora.nome} />
+            <InfoField icon={FileText} label="CNPJ" value={<span className="font-mono">{distribuidora.cnpj}</span>} />
+            <InfoField icon={MapPin} label="Localização" value={`${distribuidora.cidade} - ${distribuidora.estado}`} />
           </CardContent>
         </Card>
 
@@ -94,42 +71,10 @@ export default function DistribuidoraDetailPage() {
             <CardTitle>Contato e Status</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <User className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Responsável</p>
-                <p className="font-medium">{distribuidora.responsavel}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Email</p>
-                <p className="font-medium">{distribuidora.email}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Activity className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Status</p>
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    distribuidora.status === 'ativo'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {distribuidora.status}
-                </span>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="w-5 h-5" />
-              <div>
-                <p className="text-sm text-gray-500">ID</p>
-                <p className="font-mono text-sm">{distribuidora.id}</p>
-              </div>
-            </div>
+            <InfoField icon={User} label="Responsável" value={distribuidora.responsavel} />
+            <InfoField icon={Mail} label="Email" value={distribuidora.email} />
+            <InfoField icon={Building2} label="Status" value={<StatusBadge active={distribuidora.status === 'ativo'} />} />
+            <InfoField icon={FileText} label="ID" value={<span className="font-mono text-sm">{distribuidora.id}</span>} />
           </CardContent>
         </Card>
       </div>

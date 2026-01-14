@@ -26,6 +26,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { PageHeader, LoadingState } from '@/components/common';
 import {
   ShoppingCart,
   Package,
@@ -211,15 +212,10 @@ export default function RestaurarCarrinhoPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">
-          Restaurar Carrinho de Compras
-        </h2>
-        <p className="text-gray-500 mt-2">
-          Selecione um cliente e usuário para visualizar e restaurar carrinhos anteriores
-        </p>
-      </div>
+      <PageHeader
+        title="Restaurar Carrinho de Compras"
+        description="Selecione um cliente e usuário para visualizar e restaurar carrinhos anteriores"
+      />
 
       {/* Client and User Selection */}
       <Card>
@@ -335,16 +331,7 @@ export default function RestaurarCarrinhoPage() {
       )}
 
       {/* Loading State */}
-      {isLoadingCarrinhos && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-              <p className="text-gray-600">Carregando carrinhos...</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {isLoadingCarrinhos && <LoadingState message="Carregando carrinhos..." />}
 
       {/* Active Cart */}
       {showCarts && carrinhoAtivo && (
@@ -376,7 +363,7 @@ export default function RestaurarCarrinhoPage() {
                 </div>
                 <div>
                   <p className="text-sm text-green-700">Última Modificação</p>
-                  <p className="text-sm font-medium text-green-900">
+                  <p className="text-sm font-medium text-green-900" suppressHydrationWarning>
                     {formatDate(carrinhoAtivo.dataUltimaModificacao)}
                   </p>
                 </div>
@@ -497,13 +484,13 @@ export default function RestaurarCarrinhoPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-1 text-sm text-gray-600">
+                      <div className="flex items-center gap-1 text-sm text-gray-600" suppressHydrationWarning>
                         <Calendar className="w-4 h-4" />
                         {formatDate(carrinho.dataCriacao)}
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-gray-600" suppressHydrationWarning>
                         {formatDate(carrinho.dataUltimaModificacao)}
                       </div>
                     </TableCell>

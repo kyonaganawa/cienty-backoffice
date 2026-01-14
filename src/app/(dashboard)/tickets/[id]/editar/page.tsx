@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,28 +14,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { ArrowLeft, Loader2, CheckCircle2, XCircle, X, Plus } from 'lucide-react';
+import { ArrowLeft, Loader2, CheckCircle2, XCircle, X, Plus, Users } from 'lucide-react';
 import { Cliente } from '@/lib/mock-data/clientes';
 import { Distribuidora } from '@/lib/mock-data/distribuidoras';
 import { Pedido } from '@/lib/mock-data/pedidos';
-import { TicketTag } from '@/lib/mock-data/tickets';
-import { useAuth } from '@/hooks/auth/useAuth';
+import { Ticket, TicketTag, TicketOwner, TicketAttachment } from '@/lib/mock-data/tickets';
+import { AdminUser } from '@/lib/mock-data/admin-users';
+import { LoadingState } from '@/components/common';
 import { useFileUpload } from '@/hooks/upload/useFileUpload';
 import { FileUpload } from '@/components/common/file-upload';
+import { useAuth } from '@/hooks/auth/useAuth';
 
-export default function NovoTicketPage() {
+export default function EditarTicketPage() {
+  const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
+  const ticketId = params.id as string;
+
+  const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [existingAttachments, setExistingAttachments] = useState<TicketAttachment[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [distribuidoras, setDistribuidoras] = useState<Distribuidora[]>([]);
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [availableTags, setAvailableTags] = useState<TicketTag[]>([]);
   const [selectedTags, setSelectedTags] = useState<TicketTag[]>([]);
+  const [selectedOwners, setSelectedOwners] = useState<TicketOwner[]>([]);
   const [tagInput, setTagInput] = useState('');
+  const [ownerInput, setOwnerInput] = useState('');
   const [isTagDropdownOpen, setIsTagDropdownOpen] = useState(false);
+  const [isOwnerDropdownOpen, setIsOwnerDropdownOpen] = useState(false);
   const [isCreatingTag, setIsCreatingTag] = useState(false);
   const tagInputRef = useRef<HTMLInputElement>(null);
   const tagDropdownRef = useRef<HTMLDivElement>(null);
+  const ownerInputRef = useRef<HTMLInputElement>(null);
+  const ownerDropdownRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<{
@@ -50,6 +63,7 @@ export default function NovoTicketPage() {
     distribuidoraId: '',
     pedidoId: '',
     prioridade: '',
+    status: '',
   });
 
   // File upload hook
@@ -65,17 +79,42 @@ export default function NovoTicketPage() {
       nome: user?.name || '',
       email: user?.email || '',
     },
+    existingAttachmentsCount: existingAttachments.length,
   });
+
+  const handleRemoveExistingAttachment = (attachmentId: string) => {
+    setExistingAttachments((prev) => prev.filter((a) => a.id !== attachmentId));
+  };
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [clientesRes, distribuidorasRes, pedidosRes, tagsRes] = await Promise.all([
+        const [ticketRes, clientesRes, distribuidorasRes, pedidosRes, tagsRes, adminUsersRes] = await Promise.all([
+          fetch(`/api/tickets/${ticketId}`),
           fetch('/api/clientes'),
           fetch('/api/distribuidoras'),
           fetch('/api/pedidos'),
           fetch('/api/tags'),
+          fetch('/api/admin-users'),
         ]);
+
+        if (ticketRes.ok) {
+          const ticketData = await ticketRes.json();
+          const ticketInfo = ticketData.data as Ticket;
+          setTicket(ticketInfo);
+          setFormData({
+            titulo: ticketInfo.titulo,
+            descricao: ticketInfo.descricao,
+            clienteId: ticketInfo.clienteId,
+            distribuidoraId: ticketInfo.distribuidoraId || '',
+            pedidoId: ticketInfo.pedidoId || '',
+            prioridade: ticketInfo.prioridade,
+            status: ticketInfo.status,
+          });
+          setSelectedTags(ticketInfo.tags || []);
+          setSelectedOwners(ticketInfo.owners || []);
+          setExistingAttachments(ticketInfo.attachments || []);
+        }
 
         if (clientesRes.ok) {
           const clientesData = await clientesRes.json();
@@ -96,6 +135,11 @@ export default function NovoTicketPage() {
           const tagsData = await tagsRes.json();
           setAvailableTags(tagsData.data);
         }
+
+        if (adminUsersRes.ok) {
+          const adminUsersData = await adminUsersRes.json();
+          setAdminUsers(adminUsersData.data);
+        }
       } catch (error) {
         console.error('Erro ao carregar dados:', error);
       } finally {
@@ -104,9 +148,9 @@ export default function NovoTicketPage() {
     }
 
     fetchData();
-  }, []);
+  }, [ticketId]);
 
-  // Close tag dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
@@ -116,6 +160,14 @@ export default function NovoTicketPage() {
         !tagInputRef.current.contains(event.target as Node)
       ) {
         setIsTagDropdownOpen(false);
+      }
+      if (
+        ownerDropdownRef.current &&
+        !ownerDropdownRef.current.contains(event.target as Node) &&
+        ownerInputRef.current &&
+        !ownerInputRef.current.contains(event.target as Node)
+      ) {
+        setIsOwnerDropdownOpen(false);
       }
     }
 
@@ -182,6 +234,29 @@ export default function NovoTicketPage() {
     }
   };
 
+  // Filter available admin users based on input and exclude already selected
+  const filteredOwners = adminUsers.filter(
+    (user) =>
+      !selectedOwners.some((selected) => selected.id === user.id) &&
+      (user.nome.toLowerCase().includes(ownerInput.toLowerCase()) ||
+        user.email.toLowerCase().includes(ownerInput.toLowerCase()))
+  );
+
+  const handleAddOwner = (user: AdminUser) => {
+    if (!selectedOwners.some((o) => o.id === user.id)) {
+      setSelectedOwners([
+        ...selectedOwners,
+        { id: user.id, nome: user.nome, email: user.email },
+      ]);
+    }
+    setOwnerInput('');
+    setIsOwnerDropdownOpen(false);
+  };
+
+  const handleRemoveOwner = (ownerId: string) => {
+    setSelectedOwners(selectedOwners.filter((owner) => owner.id !== ownerId));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ type: null, message: '' });
@@ -194,24 +269,16 @@ export default function NovoTicketPage() {
       return;
     }
 
-    if (!user) {
-      setSubmitStatus({
-        type: 'error',
-        message: 'Usuário não autenticado',
-      });
-      return;
-    }
-
     setIsSubmitting(true);
 
-    // Get related entity names
+    // Get client name
     const selectedClient = clientes.find((c) => c.id === formData.clienteId);
     const selectedDistribuidora = distribuidoras.find((d) => d.id === formData.distribuidoraId);
     const selectedPedido = pedidos.find((p) => p.id === formData.pedidoId);
 
     try {
-      const response = await fetch('/api/tickets', {
-        method: 'POST',
+      const response = await fetch(`/api/tickets/${ticketId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -221,13 +288,8 @@ export default function NovoTicketPage() {
           distribuidoraNome: selectedDistribuidora?.nome,
           pedidoNumero: selectedPedido?.numero,
           tags: selectedTags,
-          attachments: getCompletedAttachments(),
-          criador: {
-            id: user.id,
-            nome: user.name,
-            email: user.email,
-          },
-          owners: [],
+          owners: selectedOwners,
+          attachments: [...existingAttachments, ...getCompletedAttachments()],
         }),
       });
 
@@ -236,16 +298,16 @@ export default function NovoTicketPage() {
       if (data.success) {
         setSubmitStatus({
           type: 'success',
-          message: data.message || 'Ticket criado com sucesso!',
+          message: data.message || 'Ticket atualizado com sucesso!',
         });
         // Wait a bit before redirecting
         setTimeout(() => {
-          router.push('/tickets');
+          router.push(`/tickets/${ticketId}`);
         }, 1500);
       } else {
         setSubmitStatus({
           type: 'error',
-          message: data.error || 'Erro ao criar ticket',
+          message: data.error || 'Erro ao atualizar ticket',
         });
       }
     } catch (error) {
@@ -259,9 +321,25 @@ export default function NovoTicketPage() {
   };
 
   if (isLoading) {
+    return <LoadingState />;
+  }
+
+  if (!ticket) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando...</div>
+      <div className="space-y-6">
+        <Button
+          variant="ghost"
+          onClick={() => router.push('/tickets')}
+          className="gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Voltar
+        </Button>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center text-red-600">Ticket não encontrado</div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -272,7 +350,7 @@ export default function NovoTicketPage() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => router.push('/tickets')}
+          onClick={() => router.push(`/tickets/${ticketId}`)}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
@@ -280,9 +358,9 @@ export default function NovoTicketPage() {
       </div>
 
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Criar Novo Ticket</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Editar Ticket</h2>
         <p className="text-gray-500 mt-2">
-          Preencha os dados para criar um novo ticket de suporte
+          Atualize as informações do ticket #{ticketId}
         </p>
       </div>
 
@@ -318,7 +396,7 @@ export default function NovoTicketPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="cliente">Cliente *</Label>
                 <Select
@@ -354,6 +432,25 @@ export default function NovoTicketPage() {
                     <SelectItem value="media">Média</SelectItem>
                     <SelectItem value="alta">Alta</SelectItem>
                     <SelectItem value="urgente">Urgente</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Status *</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                  required
+                >
+                  <SelectTrigger id="status">
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="open">Aberto</SelectItem>
+                    <SelectItem value="assigned">Atribuído</SelectItem>
+                    <SelectItem value="resolved">Resolvido</SelectItem>
+                    <SelectItem value="closed">Fechado</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -468,14 +565,92 @@ export default function NovoTicketPage() {
               </div>
             </div>
 
+            {/* Owners Section */}
+            <div className="space-y-2">
+              <Label htmlFor="owners">Responsáveis (opcional)</Label>
+              <div className="space-y-3">
+                {/* Selected Owners Display */}
+                {selectedOwners.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedOwners.map((owner) => (
+                      <span
+                        key={owner.id}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                      >
+                        <Users className="w-3.5 h-3.5" />
+                        {owner.nome}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveOwner(owner.id)}
+                          className="hover:opacity-70 focus:outline-none"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Owner Input with Dropdown */}
+                <div className="relative">
+                  <Input
+                    ref={ownerInputRef}
+                    id="owners"
+                    placeholder="Digite para buscar um responsável..."
+                    value={ownerInput}
+                    onChange={(e) => {
+                      setOwnerInput(e.target.value);
+                      setIsOwnerDropdownOpen(true);
+                    }}
+                    onFocus={() => setIsOwnerDropdownOpen(true)}
+                  />
+
+                  {/* Dropdown */}
+                  {isOwnerDropdownOpen && (ownerInput.length > 0 || filteredOwners.length > 0) && (
+                    <div
+                      ref={ownerDropdownRef}
+                      className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto"
+                    >
+                      {/* Filtered admin users */}
+                      {filteredOwners.map((user) => (
+                        <button
+                          key={user.id}
+                          type="button"
+                          onClick={() => handleAddOwner(user)}
+                          className="w-full px-3 py-2 text-left hover:bg-gray-100 flex items-center gap-2"
+                        >
+                          <Users className="w-4 h-4 text-gray-500" />
+                          <div>
+                            <div className="font-medium">{user.nome}</div>
+                            <div className="text-xs text-gray-500">{user.email} - {user.cargo}</div>
+                          </div>
+                        </button>
+                      ))}
+
+                      {/* No results message */}
+                      {filteredOwners.length === 0 && (
+                        <div className="px-3 py-2 text-gray-500 text-sm">
+                          Nenhum usuário encontrado
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <p className="text-xs text-gray-500">
+                  Atribua um ou mais responsáveis para este ticket
+                </p>
+              </div>
+            </div>
+
             {/* File Attachments Section */}
             <div className="space-y-2">
               <Label>Anexos (opcional)</Label>
               <FileUpload
-                existingAttachments={[]}
+                existingAttachments={existingAttachments}
                 pendingFiles={pendingFiles}
                 onFilesSelected={addFiles}
-                onRemoveAttachment={() => {}}
+                onRemoveAttachment={handleRemoveExistingAttachment}
                 onRemovePending={removePending}
                 disabled={isSubmitting || isUploading}
               />
@@ -560,16 +735,16 @@ export default function NovoTicketPage() {
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Criando...
+                Salvando...
               </>
             ) : (
-              'Criar Ticket'
+              'Salvar Alterações'
             )}
           </Button>
           <Button
             type="button"
             variant="outline"
-            onClick={() => router.push('/tickets')}
+            onClick={() => router.push(`/tickets/${ticketId}`)}
             disabled={isSubmitting}
           >
             Cancelar

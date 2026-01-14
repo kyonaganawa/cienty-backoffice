@@ -14,7 +14,21 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { titulo, descricao, clienteId, distribuidoraId, pedidoId, prioridade } = body;
+    const {
+      titulo,
+      descricao,
+      clienteId,
+      clienteNome,
+      distribuidoraId,
+      distribuidoraNome,
+      pedidoId,
+      pedidoNumero,
+      prioridade,
+      tags,
+      criador,
+      owners,
+      attachments,
+    } = body;
 
     // Validate input
     if (!titulo || !descricao || !clienteId || !prioridade) {
@@ -27,6 +41,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!criador || !criador.id) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Criador do ticket é obrigatório'
+        },
+        { status: 400 }
+      );
+    }
+
     // Simulate API delay
     await new Promise((resolve) => setTimeout(resolve, 800));
 
@@ -34,6 +58,7 @@ export async function POST(request: NextRequest) {
     const isSuccess = Math.random() > 0.05;
 
     if (isSuccess) {
+      const now = new Date().toISOString().split('T')[0];
       return NextResponse.json({
         success: true,
         message: 'Ticket criado com sucesso!',
@@ -42,11 +67,19 @@ export async function POST(request: NextRequest) {
           titulo,
           descricao,
           clienteId,
-          distribuidoraId: distribuidoraId || null,
-          pedidoId: pedidoId || null,
+          clienteNome: clienteNome || '',
+          distribuidoraId: distribuidoraId || undefined,
+          distribuidoraNome: distribuidoraNome || undefined,
+          pedidoId: pedidoId || undefined,
+          pedidoNumero: pedidoNumero || undefined,
           prioridade,
+          tags: tags || [],
+          attachments: attachments || [],
+          criador,
+          owners: owners || [],
           status: 'open',
-          criadoEm: new Date().toISOString(),
+          dataCriacao: now,
+          dataAtualizacao: now,
         },
       });
     } else {

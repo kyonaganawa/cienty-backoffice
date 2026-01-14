@@ -12,8 +12,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { SearchBar, PageHeader, LoadingState, StatusBadge } from '@/components/common';
 
 export default function DistribuidorasPage() {
   const router = useRouter();
@@ -39,34 +38,25 @@ export default function DistribuidorasPage() {
   }, [distribuidoras, searchQuery]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando distribuidoras...</div>
-      </div>
-    );
+    return <LoadingState message="Carregando distribuidoras..." />;
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Distribuidoras</h2>
-        <p className="text-gray-500 mt-2">Gerencie todas as distribuidoras parceiras</p>
-      </div>
+      <PageHeader
+        title="Distribuidoras"
+        description="Gerencie todas as distribuidoras parceiras"
+      />
 
       <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <CardTitle>Lista de Distribuidoras ({filteredDistribuidoras.length})</CardTitle>
-            <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="text"
-                placeholder="Buscar por nome, CNPJ, cidade..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
+            <SearchBar
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Buscar por nome, CNPJ, cidade..."
+            />
           </div>
         </CardHeader>
         <CardContent>
@@ -103,13 +93,7 @@ export default function DistribuidorasPage() {
                     <TableCell>{distribuidora.responsavel}</TableCell>
                     <TableCell>{distribuidora.email}</TableCell>
                     <TableCell>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          distribuidora.status === 'ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {distribuidora.status}
-                      </span>
+                      <StatusBadge active={distribuidora.status === 'ativo'} />
                     </TableCell>
                   </TableRow>
                 ))

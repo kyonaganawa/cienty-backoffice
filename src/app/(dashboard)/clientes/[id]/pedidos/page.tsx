@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { LoadingState, PageHeader, EmptyState, ColoredBadge } from '@/components/common';
+import { formatPrice, getOrderStatusColor, getOrderStatusLabel } from '@/lib/format-utils';
 import { ArrowLeft } from 'lucide-react';
 
 export default function ClientePedidosPage() {
@@ -50,41 +52,8 @@ export default function ClientePedidosPage() {
     fetchData();
   }, [params.id]);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(price);
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors = {
-      pendente: 'bg-yellow-100 text-yellow-800',
-      em_processamento: 'bg-blue-100 text-blue-800',
-      enviado: 'bg-purple-100 text-purple-800',
-      entregue: 'bg-green-100 text-green-800',
-      cancelado: 'bg-red-100 text-red-800',
-    };
-    return colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800';
-  };
-
-  const getStatusLabel = (status: string) => {
-    const labels = {
-      pendente: 'Pendente',
-      em_processamento: 'Em Processamento',
-      enviado: 'Enviado',
-      entregue: 'Entregue',
-      cancelado: 'Cancelado',
-    };
-    return labels[status as keyof typeof labels] || status;
-  };
-
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando pedidos...</div>
-      </div>
-    );
+    return <LoadingState message="Carregando pedidos..." />;
   }
 
   return (
@@ -100,14 +69,10 @@ export default function ClientePedidosPage() {
         </Button>
       </div>
 
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">
-          Pedidos {cliente && `de ${cliente.nome}`}
-        </h2>
-        <p className="text-gray-500 mt-2">
-          Todos os pedidos realizados por este cliente
-        </p>
-      </div>
+      <PageHeader
+        title={`Pedidos ${cliente ? `de ${cliente.name}` : ''}`}
+        description="Todos os pedidos realizados por este cliente"
+      />
 
       <Card>
         <CardHeader>
@@ -127,8 +92,8 @@ export default function ClientePedidosPage() {
             <TableBody>
               {pedidos.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                    Nenhum pedido encontrado
+                  <TableCell colSpan={5}>
+                    <EmptyState message="Nenhum pedido encontrado" />
                   </TableCell>
                 </TableRow>
               ) : (
@@ -139,7 +104,7 @@ export default function ClientePedidosPage() {
                     onClick={() => router.push(`/pedidos/${pedido.id}`)}
                   >
                     <TableCell className="font-medium">{pedido.numero}</TableCell>
-                    <TableCell>
+                    <TableCell suppressHydrationWarning>
                       {new Date(pedido.data).toLocaleDateString('pt-BR', {
                         day: '2-digit',
                         month: 'short',
@@ -147,13 +112,10 @@ export default function ClientePedidosPage() {
                       })}
                     </TableCell>
                     <TableCell>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                          pedido.status
-                        )}`}
-                      >
-                        {getStatusLabel(pedido.status)}
-                      </span>
+                      <ColoredBadge
+                        text={getOrderStatusLabel(pedido.status)}
+                        colorClasses={getOrderStatusColor(pedido.status)}
+                      />
                     </TableCell>
                     <TableCell>
                       {pedido.itens.length} {pedido.itens.length === 1 ? 'item' : 'itens'}

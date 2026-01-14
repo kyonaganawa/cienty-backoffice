@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { LoadingState, PageHeader, EmptyState } from '@/components/common';
 import {
   Search,
   CheckCircle,
@@ -114,21 +115,12 @@ export default function JobsPage() {
   };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando jobs...</div>
-      </div>
-    );
+    return <LoadingState message="Carregando jobs..." />;
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Jobs</h2>
-        <p className="text-gray-500 mt-2">
-          Histórico de execução de jobs do sistema
-        </p>
-      </div>
+      <PageHeader title="Jobs" description="Histórico de execução de jobs do sistema" />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -241,9 +233,7 @@ export default function JobsPage() {
         </CardHeader>
         <CardContent>
           {filteredJobs.length === 0 ? (
-            <p className="text-center text-gray-500 py-8">
-              Nenhum job encontrado
-            </p>
+            <EmptyState message="Nenhum job encontrado" />
           ) : (
             <div className="space-y-3">
               {filteredJobs.map((job) => (
@@ -277,7 +267,7 @@ export default function JobsPage() {
                       <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-gray-600 ml-14">
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
-                          <span>
+                          <span suppressHydrationWarning>
                             {new Date(job.dataExecucao).toLocaleString('pt-BR')}
                           </span>
                         </div>

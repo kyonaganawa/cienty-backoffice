@@ -4,8 +4,12 @@ import { useParams, useRouter } from 'next/navigation';
 import { useGetTicketById } from '@/hooks/ticket/useGetTicketById';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, User, Calendar, AlertCircle, Package, Building2, FileText, Clock } from 'lucide-react';
+import { LoadingState, InfoField, ColoredBadge } from '@/components/common';
+import { ArrowLeft, User, Calendar, AlertCircle, Package, Building2, FileText, Clock, Pencil, Tag, Users, Paperclip } from 'lucide-react';
+import { formatDate } from '@/lib/date-utils';
+import { getTicketPriorityColor, getTicketPriorityLabel } from '@/lib/format-utils';
+import { AttachmentList } from '@/components/common/attachment-list';
+import { TicketComments } from '@/components/common/ticket-comments';
 
 export default function TicketDetailPage() {
   const params = useParams();
@@ -32,32 +36,9 @@ export default function TicketDetailPage() {
     return labels[status as keyof typeof labels] || status;
   };
 
-  const getPrioridadeColor = (prioridade: string) => {
-    const colors = {
-      baixa: 'bg-gray-100 text-gray-700',
-      media: 'bg-yellow-100 text-yellow-700',
-      alta: 'bg-orange-100 text-orange-700',
-      urgente: 'bg-red-100 text-red-700',
-    };
-    return colors[prioridade as keyof typeof colors] || 'bg-gray-100 text-gray-700';
-  };
-
-  const getPrioridadeLabel = (prioridade: string) => {
-    const labels = {
-      baixa: 'Baixa',
-      media: 'Média',
-      alta: 'Alta',
-      urgente: 'Urgente',
-    };
-    return labels[prioridade as keyof typeof labels] || prioridade;
-  };
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Carregando...</div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   if (error || !ticket) {
@@ -91,17 +72,20 @@ export default function TicketDetailPage() {
           <ArrowLeft className="w-4 h-4" />
           Voltar
         </Button>
+        <Button
+          onClick={() => router.push(`/tickets/${params.id}/editar`)}
+          className="gap-2"
+        >
+          <Pencil className="w-4 h-4" />
+          Editar Ticket
+        </Button>
       </div>
 
       <div>
         <div className="flex items-center gap-3 mb-2">
           <h2 className="text-3xl font-bold tracking-tight">{ticket.titulo}</h2>
-          <Badge className={getPrioridadeColor(ticket.prioridade)}>
-            {getPrioridadeLabel(ticket.prioridade)}
-          </Badge>
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(ticket.status)}`}>
-            {getStatusLabel(ticket.status)}
-          </span>
+          <ColoredBadge text={getTicketPriorityLabel(ticket.prioridade)} colorClasses={getTicketPriorityColor(ticket.prioridade)} />
+          <ColoredBadge text={getStatusLabel(ticket.status)} colorClasses={getStatusColor(ticket.status)} />
         </div>
         <p className="text-gray-500">Detalhes do ticket</p>
       </div>
@@ -112,48 +96,22 @@ export default function TicketDetailPage() {
             <CardTitle>Informações do Ticket</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Data de Criação</p>
-                <p className="font-medium">
-                  {new Date(ticket.dataCriacao).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Última Atualização</p>
-                <p className="font-medium">
-                  {new Date(ticket.dataAtualizacao).toLocaleDateString('pt-BR', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <User className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Criado por</p>
-                <p className="font-medium">{ticket.criadorNome}</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <AlertCircle className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div>
-                <p className="text-sm text-gray-500">Prioridade</p>
-                <Badge className={getPrioridadeColor(ticket.prioridade)}>
-                  {getPrioridadeLabel(ticket.prioridade)}
-                </Badge>
-              </div>
-            </div>
+            <InfoField
+              icon={Calendar}
+              label="Data de Criação"
+              value={<span suppressHydrationWarning>{formatDate(ticket.dataCriacao, "dd 'de' MMMM 'de' yyyy")}</span>}
+            />
+            <InfoField
+              icon={Clock}
+              label="Última Atualização"
+              value={<span suppressHydrationWarning>{formatDate(ticket.dataAtualizacao, "dd 'de' MMMM 'de' yyyy")}</span>}
+            />
+            <InfoField icon={User} label="Criado por" value={ticket.criador?.nome || 'N/A'} />
+            <InfoField
+              icon={AlertCircle}
+              label="Prioridade"
+              value={<ColoredBadge text={getTicketPriorityLabel(ticket.prioridade)} colorClasses={getTicketPriorityColor(ticket.prioridade)} />}
+            />
           </CardContent>
         </Card>
 
@@ -162,54 +120,63 @@ export default function TicketDetailPage() {
             <CardTitle>Informações Relacionadas</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-start gap-3">
-              <User className="w-5 h-5 text-gray-400 mt-0.5" />
-              <div className="flex-1">
-                <p className="text-sm text-gray-500">Cliente</p>
-                <p
+            <InfoField
+              icon={User}
+              label="Cliente"
+              value={
+                <span
                   className="font-medium text-blue-600 cursor-pointer hover:underline"
                   onClick={() => router.push(`/clientes/${ticket.clienteId}`)}
                 >
                   {ticket.clienteNome}
-                </p>
-              </div>
-            </div>
-            {ticket.ownerNome && (
-              <div className="flex items-start gap-3">
-                <User className="w-5 h-5 text-gray-400 mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-500">Responsável</p>
-                  <p className="font-medium">{ticket.ownerNome}</p>
-                </div>
-              </div>
+                </span>
+              }
+            />
+            {ticket.owners && ticket.owners.length > 0 && (
+              <InfoField
+                icon={Users}
+                label="Responsáveis"
+                value={
+                  <div className="flex flex-wrap gap-1">
+                    {ticket.owners.map((owner: { id: string; nome: string; email: string }) => (
+                      <span
+                        key={owner.id}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                      >
+                        {owner.nome}
+                      </span>
+                    ))}
+                  </div>
+                }
+              />
             )}
             {ticket.distribuidoraNome && (
-              <div className="flex items-start gap-3">
-                <Building2 className="w-5 h-5 text-gray-400 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-500">Distribuidora</p>
-                  <p
+              <InfoField
+                icon={Building2}
+                label="Distribuidora"
+                value={
+                  <span
                     className="font-medium text-blue-600 cursor-pointer hover:underline"
                     onClick={() => router.push(`/distribuidoras/${ticket.distribuidoraId}`)}
                   >
                     {ticket.distribuidoraNome}
-                  </p>
-                </div>
-              </div>
+                  </span>
+                }
+              />
             )}
             {ticket.pedidoNumero && (
-              <div className="flex items-start gap-3">
-                <Package className="w-5 h-5 text-gray-400 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm text-gray-500">Pedido</p>
-                  <p
+              <InfoField
+                icon={Package}
+                label="Pedido"
+                value={
+                  <span
                     className="font-medium text-blue-600 cursor-pointer hover:underline"
                     onClick={() => router.push(`/pedidos/${ticket.pedidoId}`)}
                   >
                     {ticket.pedidoNumero}
-                  </p>
-                </div>
-              </div>
+                  </span>
+                }
+              />
             )}
           </CardContent>
         </Card>
@@ -229,6 +196,45 @@ export default function TicketDetailPage() {
         </CardContent>
       </Card>
 
+      {ticket.tags && ticket.tags.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Tag className="w-5 h-5" />
+              <CardTitle>Tags</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-2">
+              {ticket.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${tag.cor}`}
+                >
+                  {tag.nome}
+                </span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {ticket.attachments && ticket.attachments.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Paperclip className="w-5 h-5" />
+              <CardTitle>Anexos ({ticket.attachments.length})</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <AttachmentList attachments={ticket.attachments} />
+          </CardContent>
+        </Card>
+      )}
+
+      <TicketComments ticketId={ticket.id} initialComments={ticket.comments} />
+
       <Card>
         <CardHeader>
           <CardTitle>Resumo</CardTitle>
@@ -244,7 +250,7 @@ export default function TicketDetailPage() {
             <div className="p-4 bg-purple-50 rounded-lg">
               <p className="text-sm text-purple-600 font-medium">Prioridade</p>
               <p className="text-lg font-bold text-purple-900 mt-1">
-                {getPrioridadeLabel(ticket.prioridade)}
+                {getTicketPriorityLabel(ticket.prioridade)}
               </p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg">

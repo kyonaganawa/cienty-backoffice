@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { PageHeader } from '@/components/common';
 import { ArrowLeft, CheckCircle2, XCircle, Package, X } from 'lucide-react';
 import { Produto } from '@/lib/mock-data/produtos';
 
@@ -147,13 +148,7 @@ export default function NovaColecaoPage() {
         Voltar para Coleções
       </Button>
 
-      {/* Header */}
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Nova Coleção</h2>
-        <p className="text-gray-500 mt-2">
-          Crie uma nova coleção e selecione os produtos
-        </p>
-      </div>
+      <PageHeader title="Nova Coleção" description="Crie uma nova coleção e selecione os produtos" />
 
       {/* Form */}
       <form onSubmit={handleSubmit}>
