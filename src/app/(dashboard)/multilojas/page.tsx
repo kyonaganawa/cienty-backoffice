@@ -157,8 +157,8 @@ export default function MultilojasPage() {
                     </SelectTrigger>
                     <SelectContent>
                       {clientes.map((cliente) => (
-                        <SelectItem key={cliente.id} value={cliente.id}>
-                          {cliente.nome} - {cliente.empresa}
+                        <SelectItem key={cliente.id} value={String(cliente.id)}>
+                          {cliente.name} - {cliente.company.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -169,10 +169,10 @@ export default function MultilojasPage() {
                         Usuário Selecionado:
                       </p>
                       <p className="text-sm text-blue-700">
-                        {clientes.find((c) => c.id === selectedClienteId)?.nome}
+                        {clientes.find((c) => String(c.id) === selectedClienteId)?.name}
                       </p>
                       <p className="text-xs text-blue-600 mt-1">
-                        {clientes.find((c) => c.id === selectedClienteId)?.email}
+                        {clientes.find((c) => String(c.id) === selectedClienteId)?.company.name}
                       </p>
                     </div>
                   )}
@@ -255,7 +255,7 @@ export default function MultilojasPage() {
                 {/* Stores List */}
                 <div className="space-y-2 max-h-[500px] overflow-y-auto">
                   {filteredLojas.length === 0 ? (
-                    <EmptyState message="Nenhuma loja encontrada" />
+                    <EmptyState title="Nenhuma loja encontrada" />
                   ) : (
                     filteredLojas.map((loja) => (
                       <div

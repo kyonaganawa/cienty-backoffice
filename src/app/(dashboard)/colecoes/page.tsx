@@ -210,7 +210,7 @@ export default function ColecoesPage() {
           </Table>
 
           {filteredColecoes.length === 0 && (
-            <EmptyState message="Nenhuma coleção encontrada com os filtros aplicados" />
+            <EmptyState title="Nenhuma coleção encontrada com os filtros aplicados" />
           )}
         </CardContent>
       </Card>

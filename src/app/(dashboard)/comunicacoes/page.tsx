@@ -354,7 +354,7 @@ export default function ComunicacoesPage() {
           </Table>
 
           {filteredComunicacoes.length === 0 && (
-            <EmptyState message="Nenhuma comunicação encontrada com os filtros aplicados" />
+            <EmptyState title="Nenhuma comunicação encontrada com os filtros aplicados" />
           )}
         </CardContent>
       </Card>

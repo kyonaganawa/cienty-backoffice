@@ -7,11 +7,11 @@ import { useGetClientePedidos } from '@/hooks/client/useGetClientePedidos';
 import { useGetClienteDistribuidoras } from '@/hooks/client/useGetClienteDistribuidoras';
 import { Distribuidora } from '@/lib/mock-data/distribuidoras';
 import { formatRelativeTime, formatDate } from '@/lib/date-utils';
-import { formatPrice, getOrderStatusColor, getOrderStatusLabel } from '@/lib/format-utils';
+import { formatPrice, getOrderStatusColor as getStatusColor, getOrderStatusLabel as getStatusLabel } from '@/lib/format-utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LoadingState, StatusBadge, InfoField, CollapsibleCard } from '@/components/common';
-import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ShoppingCart, Package, User, RefreshCw, Clock } from 'lucide-react';
+import { LoadingState, StatusBadge, InfoField } from '@/components/common';
+import { ArrowLeft, Mail, Phone, Building2, Calendar, Activity, ShoppingCart, Package, User, RefreshCw, Clock, ChevronUp, ChevronDown } from 'lucide-react';
 
 export default function ClienteDetailPage() {
   const params = useParams();
@@ -20,7 +20,7 @@ export default function ClienteDetailPage() {
 
   const { data: cliente, isLoading: isLoadingCliente, error } = useGetClienteById(clienteId);
   const { data: pedidos = [] } = useGetClientePedidos(clienteId);
-  const { data: distribuidoras = [], refetch: refetchDistribuidoras } = useGetClienteDistribuidoras(clienteId);
+  const { data: distribuidoras = [] } = useGetClienteDistribuidoras(clienteId);
 
   const [showPedidos, setShowPedidos] = useState(true);
   const [showDistribuidoras, setShowDistribuidoras] = useState(true);

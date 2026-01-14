@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, ChevronUp, AlertCircle, Clock, CheckCircle, XCircle, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { LoadingState, PageHeader, EmptyState, ColoredBadge } from '@/components/common';
+import { LoadingState, PageHeader, EmptyState } from '@/components/common';
 import { formatDate } from '@/lib/date-utils';
 import { getTicketPriorityColor, getTicketPriorityLabel } from '@/lib/format-utils';
 
@@ -108,7 +108,7 @@ export default function TicketsPage() {
         {isExpanded && (
           <CardContent>
             {tickets.length === 0 ? (
-              <EmptyState message={`Nenhum ticket ${getStatusLabel(status).toLowerCase()}`} />
+              <EmptyState title={`Nenhum ticket ${getStatusLabel(status).toLowerCase()}`} />
             ) : (
               <div className="space-y-3">
                 {tickets.map((ticket) => (
@@ -121,19 +121,19 @@ export default function TicketsPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-semibold text-gray-900 truncate">{ticket.titulo}</h3>
-                          <ColoredBadge text={getTicketPriorityLabel(ticket.prioridade)} colorClasses={getTicketPriorityColor(ticket.prioridade)} />
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTicketPriorityColor(ticket.prioridade)}`}>{getTicketPriorityLabel(ticket.prioridade)}</span>
                         </div>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
                           <span>Cliente: {ticket.clienteNome}</span>
-                          {ticket.ownerNome && <span>Responsável: {ticket.ownerNome}</span>}
+                          {ticket.owners?.length > 0 && <span>Responsável: {ticket.owners[0].nome}</span>}
                           {ticket.pedidoNumero && <span>Pedido: {ticket.pedidoNumero}</span>}
                         </div>
                         <div className="mt-2 text-xs text-gray-500">
-                          Criado em {formatDate(ticket.dataCriacao)} por {ticket.criadorNome}
+                          Criado em {formatDate(ticket.dataCriacao)} por {ticket.criador?.nome}
                         </div>
                       </div>
                       <div className="flex-shrink-0">
-                        <ColoredBadge text={getStatusLabel(ticket.status)} colorClasses={getStatusColor(ticket.status)} />
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>{getStatusLabel(ticket.status)}</span>
                       </div>
                     </div>
                   </div>

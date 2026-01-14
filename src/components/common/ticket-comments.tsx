@@ -21,10 +21,10 @@ function formatCommentDate(dateString: string): string {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffMins < 1) return 'Agora mesmo';
-  if (diffMins < 60) return `Há ${diffMins} minuto${diffMins > 1 ? 's' : ''}`;
-  if (diffHours < 24) return `Há ${diffHours} hora${diffHours > 1 ? 's' : ''}`;
-  if (diffDays < 7) return `Há ${diffDays} dia${diffDays > 1 ? 's' : ''}`;
+  if (diffMins < 1) { return 'Agora mesmo'; }
+  if (diffMins < 60) { return `Há ${diffMins} minuto${diffMins > 1 ? 's' : ''}`; }
+  if (diffHours < 24) { return `Há ${diffHours} hora${diffHours > 1 ? 's' : ''}`; }
+  if (diffDays < 7) { return `Há ${diffDays} dia${diffDays > 1 ? 's' : ''}`; }
 
   return date.toLocaleDateString('pt-BR', {
     day: '2-digit',
@@ -66,7 +66,7 @@ export function TicketComments({ ticketId, initialComments = [] }: TicketComment
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!newComment.trim() || !user) return;
+    if (!newComment.trim() || !user) { return; }
 
     setIsSubmitting(true);
 
@@ -98,7 +98,7 @@ export function TicketComments({ ticketId, initialComments = [] }: TicketComment
   };
 
   const handleDelete = async (commentId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este comentário?')) return;
+    if (!confirm('Tem certeza que deseja excluir este comentário?')) { return; }
 
     setDeletingId(commentId);
 

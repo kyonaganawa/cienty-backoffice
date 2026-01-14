@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LoadingState, PageHeader, EmptyState, ColoredBadge } from '@/components/common';
+import { LoadingState, PageHeader, EmptyState } from '@/components/common';
 import { formatPrice, getOrderStatusColor, getOrderStatusLabel } from '@/lib/format-utils';
 import { ArrowLeft } from 'lucide-react';
 
@@ -93,7 +93,7 @@ export default function ClientePedidosPage() {
               {pedidos.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5}>
-                    <EmptyState message="Nenhum pedido encontrado" />
+                    <EmptyState title="Nenhum pedido encontrado" />
                   </TableCell>
                 </TableRow>
               ) : (
@@ -112,10 +112,9 @@ export default function ClientePedidosPage() {
                       })}
                     </TableCell>
                     <TableCell>
-                      <ColoredBadge
-                        text={getOrderStatusLabel(pedido.status)}
-                        colorClasses={getOrderStatusColor(pedido.status)}
-                      />
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(pedido.status)}`}>
+                        {getOrderStatusLabel(pedido.status)}
+                      </span>
                     </TableCell>
                     <TableCell>
                       {pedido.itens.length} {pedido.itens.length === 1 ? 'item' : 'itens'}

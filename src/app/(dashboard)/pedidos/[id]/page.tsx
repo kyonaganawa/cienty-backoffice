@@ -14,7 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { LoadingState, InfoField, ColoredBadge } from '@/components/common';
+import { LoadingState, InfoField } from '@/components/common';
 import { ArrowLeft, Calendar, User, Building2, Package, DollarSign, FileText } from 'lucide-react';
 import { formatDate } from '@/lib/date-utils';
 import { formatPrice, getOrderStatusColor, getOrderStatusLabel } from '@/lib/format-utils';
@@ -85,7 +85,7 @@ export default function PedidoDetailPage() {
             <InfoField
               icon={Package}
               label="Status"
-              value={<ColoredBadge text={getOrderStatusLabel(pedido.status)} colorClasses={getOrderStatusColor(pedido.status)} />}
+              value={<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(pedido.status)}`}>{getOrderStatusLabel(pedido.status)}</span>}
             />
             <InfoField
               icon={DollarSign}

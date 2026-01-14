@@ -154,7 +154,7 @@ export default function NovoTicketPage() {
 
   const handleCreateTag = async () => {
     const trimmedInput = tagInput.trim();
-    if (!trimmedInput || trimmedInput.length < 2) return;
+    if (!trimmedInput || trimmedInput.length < 2) { return; }
 
     setIsCreatingTag(true);
     try {
@@ -205,9 +205,9 @@ export default function NovoTicketPage() {
     setIsSubmitting(true);
 
     // Get related entity names
-    const selectedClient = clientes.find((c) => c.id === formData.clienteId);
-    const selectedDistribuidora = distribuidoras.find((d) => d.id === formData.distribuidoraId);
-    const selectedPedido = pedidos.find((p) => p.id === formData.pedidoId);
+    const selectedClient = clientes.find((c) => String(c.id) === formData.clienteId);
+    const selectedDistribuidora = distribuidoras.find((d) => String(d.id) === formData.distribuidoraId);
+    const selectedPedido = pedidos.find((p) => String(p.id) === formData.pedidoId);
 
     try {
       const response = await fetch('/api/tickets', {
@@ -217,7 +217,7 @@ export default function NovoTicketPage() {
         },
         body: JSON.stringify({
           ...formData,
-          clienteNome: selectedClient?.nome,
+          clienteNome: selectedClient?.name,
           distribuidoraNome: selectedDistribuidora?.nome,
           pedidoNumero: selectedPedido?.numero,
           tags: selectedTags,
@@ -331,8 +331,8 @@ export default function NovoTicketPage() {
                   </SelectTrigger>
                   <SelectContent>
                     {clientes.map((cliente) => (
-                      <SelectItem key={cliente.id} value={cliente.id}>
-                        {cliente.nome} - {cliente.empresa}
+                      <SelectItem key={cliente.id} value={String(cliente.id)}>
+                        {cliente.name} - {cliente.company.name}
                       </SelectItem>
                     ))}
                   </SelectContent>

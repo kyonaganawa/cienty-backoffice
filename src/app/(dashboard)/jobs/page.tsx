@@ -233,7 +233,7 @@ export default function JobsPage() {
         </CardHeader>
         <CardContent>
           {filteredJobs.length === 0 ? (
-            <EmptyState message="Nenhum job encontrado" />
+            <EmptyState title="Nenhum job encontrado" />
           ) : (
             <div className="space-y-3">
               {filteredJobs.map((job) => (

@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useGetTicketById } from '@/hooks/ticket/useGetTicketById';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { LoadingState, InfoField, ColoredBadge } from '@/components/common';
+import { LoadingState, InfoField } from '@/components/common';
 import { ArrowLeft, User, Calendar, AlertCircle, Package, Building2, FileText, Clock, Pencil, Tag, Users, Paperclip } from 'lucide-react';
 import { formatDate } from '@/lib/date-utils';
 import { getTicketPriorityColor, getTicketPriorityLabel } from '@/lib/format-utils';
@@ -84,8 +84,8 @@ export default function TicketDetailPage() {
       <div>
         <div className="flex items-center gap-3 mb-2">
           <h2 className="text-3xl font-bold tracking-tight">{ticket.titulo}</h2>
-          <ColoredBadge text={getTicketPriorityLabel(ticket.prioridade)} colorClasses={getTicketPriorityColor(ticket.prioridade)} />
-          <ColoredBadge text={getStatusLabel(ticket.status)} colorClasses={getStatusColor(ticket.status)} />
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTicketPriorityColor(ticket.prioridade)}`}>{getTicketPriorityLabel(ticket.prioridade)}</span>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(ticket.status)}`}>{getStatusLabel(ticket.status)}</span>
         </div>
         <p className="text-gray-500">Detalhes do ticket</p>
       </div>
@@ -110,7 +110,7 @@ export default function TicketDetailPage() {
             <InfoField
               icon={AlertCircle}
               label="Prioridade"
-              value={<ColoredBadge text={getTicketPriorityLabel(ticket.prioridade)} colorClasses={getTicketPriorityColor(ticket.prioridade)} />}
+              value={<span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTicketPriorityColor(ticket.prioridade)}`}>{getTicketPriorityLabel(ticket.prioridade)}</span>}
             />
           </CardContent>
         </Card>

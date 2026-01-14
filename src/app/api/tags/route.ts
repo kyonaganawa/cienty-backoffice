@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { mockTags, tagColors, TicketTag } from '@/lib/mock-data/tickets';
 
 // In-memory store for tags (simulates database)
-let tags: TicketTag[] = [...mockTags];
+const tags: TicketTag[] = [...mockTags];
 
 export async function GET() {
   // Simulate API delay
