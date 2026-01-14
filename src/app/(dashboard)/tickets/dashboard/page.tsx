@@ -35,7 +35,7 @@ interface TicketStats {
 }
 
 export default function TicketDashboardPage() {
-  const [period, setPeriod] = useState<'weekly' | 'monthly'>('monthly');
+  const [period, setPeriod] = useState<'weekly' | 'monthly' | 'all'>('monthly');
   const [stats, setStats] = useState<TicketStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -74,7 +74,7 @@ export default function TicketDashboardPage() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard de Tickets</h2>
           <p className="text-gray-500 mt-1">
-            Visão geral dos tickets {period === 'weekly' ? 'da última semana' : 'do último mês'}
+            Visão geral dos tickets {period === 'weekly' ? 'da última semana' : period === 'monthly' ? 'do último mês' : '(histórico completo)'}
           </p>
         </div>
         <div className="flex gap-2">
@@ -89,6 +89,12 @@ export default function TicketDashboardPage() {
             onClick={() => setPeriod('monthly')}
           >
             Mensal
+          </Button>
+          <Button
+            variant={period === 'all' ? 'default' : 'outline'}
+            onClick={() => setPeriod('all')}
+          >
+            Todos
           </Button>
         </div>
       </div>

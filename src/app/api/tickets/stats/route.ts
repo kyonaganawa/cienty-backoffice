@@ -25,16 +25,19 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const period = searchParams.get('period') || 'monthly';
 
-  // Calculate date threshold
-  const now = new Date();
-  const daysAgo = period === 'weekly' ? 7 : 30;
-  const threshold = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+  // Filter tickets by date (or return all if period is 'all')
+  let filteredTickets = mockTickets;
 
-  // Filter tickets by date
-  const filteredTickets = mockTickets.filter((ticket) => {
-    const ticketDate = new Date(ticket.dataCriacao);
-    return ticketDate >= threshold;
-  });
+  if (period !== 'all') {
+    const now = new Date();
+    const daysAgo = period === 'weekly' ? 7 : 30;
+    const threshold = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+
+    filteredTickets = mockTickets.filter((ticket) => {
+      const ticketDate = new Date(ticket.dataCriacao);
+      return ticketDate >= threshold;
+    });
+  }
 
   const total = filteredTickets.length;
 

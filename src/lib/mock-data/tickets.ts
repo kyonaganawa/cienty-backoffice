@@ -106,11 +106,11 @@ export const mockTags: TicketTag[] = [
 ];
 
 export const mockTickets: Ticket[] = [
-  // Open tickets
+  // Open tickets (this week: Jan 8-14, 2026)
   {
     id: '1',
     titulo: 'Problema com entrega do pedido',
-    descricao: 'Cliente reportou que o pedido PED-2024-003 não foi entregue no prazo. Necessário verificar com a distribuidora o status da entrega e informar previsão atualizada.',
+    descricao: 'Cliente reportou que o pedido PED-2026-003 não foi entregue no prazo. Necessário verificar com a distribuidora o status da entrega e informar previsão atualizada.',
     clienteId: '1',
     clienteNome: 'João Silva',
     criador: { id: 'admin-1', nome: 'Admin User', email: 'admin@backoffice.com' },
@@ -118,7 +118,7 @@ export const mockTickets: Ticket[] = [
     distribuidoraId: '1',
     distribuidoraNome: 'Distribuidora Nacional S.A.',
     pedidoId: '3',
-    pedidoNumero: 'PED-2024-003',
+    pedidoNumero: 'PED-2026-003',
     status: 'open',
     prioridade: 'alta',
     tags: [
@@ -127,8 +127,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-22',
-    dataAtualizacao: '2024-10-22',
+    dataCriacao: '2026-01-14',
+    dataAtualizacao: '2026-01-14',
   },
   {
     id: '2',
@@ -145,8 +145,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-23',
-    dataAtualizacao: '2024-10-23',
+    dataCriacao: '2026-01-13',
+    dataAtualizacao: '2026-01-13',
   },
   {
     id: '3',
@@ -164,19 +164,19 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-24',
-    dataAtualizacao: '2024-10-24',
+    dataCriacao: '2026-01-12',
+    dataAtualizacao: '2026-01-12',
   },
   {
     id: '4',
     titulo: 'Erro no valor do pedido',
-    descricao: 'Cliente reportou divergência no valor total do pedido PED-2024-015. Verificar se os descontos foram aplicados corretamente.',
+    descricao: 'Cliente reportou divergência no valor total do pedido PED-2026-015. Verificar se os descontos foram aplicados corretamente.',
     clienteId: '1',
     clienteNome: 'João Silva',
     criador: { id: 'admin-1', nome: 'Admin User', email: 'admin@backoffice.com' },
     owners: [],
     pedidoId: '15',
-    pedidoNumero: 'PED-2024-015',
+    pedidoNumero: 'PED-2026-015',
     status: 'open',
     prioridade: 'urgente',
     tags: [
@@ -185,11 +185,11 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-25',
-    dataAtualizacao: '2024-10-25',
+    dataCriacao: '2026-01-10',
+    dataAtualizacao: '2026-01-10',
   },
 
-  // Assigned tickets
+  // Assigned tickets (last 2 weeks: Jan 1-13, 2026)
   {
     id: '5',
     titulo: 'Produto com defeito',
@@ -201,7 +201,7 @@ export const mockTickets: Ticket[] = [
       { id: 'admin-2', nome: 'Maria Silva', email: 'maria.silva@backoffice.com' },
     ],
     pedidoId: '6',
-    pedidoNumero: 'PED-2024-006',
+    pedidoNumero: 'PED-2026-006',
     status: 'assigned',
     prioridade: 'alta',
     tags: [
@@ -210,8 +210,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-20',
-    dataAtualizacao: '2024-10-21',
+    dataCriacao: '2026-01-11',
+    dataAtualizacao: '2026-01-12',
   },
   {
     id: '6',
@@ -232,13 +232,13 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-18',
-    dataAtualizacao: '2024-10-20',
+    dataCriacao: '2026-01-09',
+    dataAtualizacao: '2026-01-10',
   },
   {
     id: '7',
     titulo: 'Solicitação de reembolso',
-    descricao: 'Cliente solicitou reembolso do pedido PED-2024-009 que foi cancelado. Valor total: R$ 2.499,99',
+    descricao: 'Cliente solicitou reembolso do pedido PED-2026-009 que foi cancelado. Valor total: R$ 2.499,99',
     clienteId: '1',
     clienteNome: 'João Silva',
     criador: { id: 'admin-1', nome: 'Admin User', email: 'admin@backoffice.com' },
@@ -246,7 +246,7 @@ export const mockTickets: Ticket[] = [
       { id: 'admin-4', nome: 'Ana Costa', email: 'ana.costa@backoffice.com' },
     ],
     pedidoId: '9',
-    pedidoNumero: 'PED-2024-009',
+    pedidoNumero: 'PED-2026-009',
     status: 'assigned',
     prioridade: 'media',
     tags: [
@@ -255,8 +255,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-19',
-    dataAtualizacao: '2024-10-21',
+    dataCriacao: '2026-01-08',
+    dataAtualizacao: '2026-01-09',
   },
   {
     id: '8',
@@ -276,15 +276,15 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-17',
-    dataAtualizacao: '2024-10-19',
+    dataCriacao: '2026-01-05',
+    dataAtualizacao: '2026-01-07',
   },
 
-  // Resolved tickets
+  // Resolved tickets (last month: Dec 20 - Jan 10, 2026)
   {
     id: '9',
     titulo: 'Nota fiscal não recebida',
-    descricao: 'Cliente não recebeu nota fiscal do pedido PED-2024-001. Nota foi reenviada por email.',
+    descricao: 'Cliente não recebeu nota fiscal do pedido PED-2026-001. Nota foi reenviada por email.',
     clienteId: '1',
     clienteNome: 'João Silva',
     criador: { id: 'admin-1', nome: 'Admin User', email: 'admin@backoffice.com' },
@@ -292,7 +292,7 @@ export const mockTickets: Ticket[] = [
       { id: 'admin-4', nome: 'Ana Costa', email: 'ana.costa@backoffice.com' },
     ],
     pedidoId: '1',
-    pedidoNumero: 'PED-2024-001',
+    pedidoNumero: 'PED-2026-001',
     status: 'resolved',
     prioridade: 'baixa',
     tags: [
@@ -300,13 +300,13 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-15',
-    dataAtualizacao: '2024-10-16',
+    dataCriacao: '2026-01-06',
+    dataAtualizacao: '2026-01-07',
   },
   {
     id: '10',
     titulo: 'Informações sobre novo produto',
-    descricao: 'Cliente solicitou informações sobre lançamento de novos produtos. Catálogo 2025 enviado por email.',
+    descricao: 'Cliente solicitou informações sobre lançamento de novos produtos. Catálogo 2026 enviado por email.',
     clienteId: '4',
     clienteNome: 'Ana Costa',
     criador: { id: 'admin-6', nome: 'Beatriz Oliveira', email: 'beatriz.oliveira@backoffice.com' },
@@ -320,8 +320,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-14',
-    dataAtualizacao: '2024-10-15',
+    dataCriacao: '2026-01-03',
+    dataAtualizacao: '2026-01-04',
   },
   {
     id: '11',
@@ -340,8 +340,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-12',
-    dataAtualizacao: '2024-10-13',
+    dataCriacao: '2025-12-28',
+    dataAtualizacao: '2025-12-29',
   },
   {
     id: '12',
@@ -358,11 +358,11 @@ export const mockTickets: Ticket[] = [
     tags: [],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-10',
-    dataAtualizacao: '2024-10-11',
+    dataCriacao: '2025-12-22',
+    dataAtualizacao: '2025-12-23',
   },
 
-  // Closed tickets
+  // Closed tickets (older: Nov-Dec 2025)
   {
     id: '13',
     titulo: 'Consultoria sobre melhor produto',
@@ -380,8 +380,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-05',
-    dataAtualizacao: '2024-10-07',
+    dataCriacao: '2025-12-18',
+    dataAtualizacao: '2025-12-20',
   },
   {
     id: '14',
@@ -401,8 +401,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-10-01',
-    dataAtualizacao: '2024-10-05',
+    dataCriacao: '2025-12-10',
+    dataAtualizacao: '2025-12-15',
   },
   {
     id: '15',
@@ -421,8 +421,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-09-28',
-    dataAtualizacao: '2024-10-02',
+    dataCriacao: '2025-12-01',
+    dataAtualizacao: '2025-12-05',
   },
   {
     id: '16',
@@ -435,7 +435,7 @@ export const mockTickets: Ticket[] = [
       { id: 'admin-4', nome: 'Ana Costa', email: 'ana.costa@backoffice.com' },
     ],
     pedidoId: '2',
-    pedidoNumero: 'PED-2024-002',
+    pedidoNumero: 'PED-2025-002',
     status: 'closed',
     prioridade: 'media',
     tags: [
@@ -443,8 +443,8 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-09-25',
-    dataAtualizacao: '2024-09-27',
+    dataCriacao: '2025-11-25',
+    dataAtualizacao: '2025-11-28',
   },
   {
     id: '17',
@@ -463,7 +463,7 @@ export const mockTickets: Ticket[] = [
     ],
     attachments: [],
     comments: [],
-    dataCriacao: '2024-09-20',
-    dataAtualizacao: '2024-09-22',
+    dataCriacao: '2025-11-15',
+    dataAtualizacao: '2025-11-18',
   },
 ];
